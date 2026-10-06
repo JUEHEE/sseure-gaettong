@@ -1,0 +1,20 @@
+# 의존성 / 빌드 결과물
+node_modules/
+dist/
+.vite/
+
+# 환경변수 (API 키는 절대 커밋하지 않는다)
+.env
+.env.*
+!.env.example
+
+# 현장조사 원본 (사진 원본·GPS 포함 파일은 저장소에 올리지 않는다)
+data/raw/
+*.HEIC
+*.heic
+
+# OS / 에디터
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

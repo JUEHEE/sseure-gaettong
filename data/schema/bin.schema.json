@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sseure-gaettong/schema/bin.schema.json",
+  "title": "Bin (쓰레기통 장소 1곳)",
+  "description": "쓰레개똥 bins 데이터 형식. 상세 설명은 docs/data.md 참고. pet_waste_status와 bag_available의 기본값은 unknown.",
+  "type": "object",
+  "required": [
+    "id", "latitude", "longitude", "coord_source", "detail_location",
+    "district", "area", "place_type", "bin_type", "waste_kind",
+    "pet_waste_status", "bag_available", "source", "status"
+  ],
+  "properties": {
+    "id": { "type": "string", "description": "고유 ID (실데이터는 uuid, mock은 'mock-001' 형식)" },
+    "latitude": { "type": ["number", "null"], "minimum": -90, "maximum": 90, "description": "WGS84 위도. 좌표 확보 실패 시 null" },
+    "longitude": { "type": ["number", "null"], "minimum": -180, "maximum": 180, "description": "WGS84 경도. 좌표 확보 실패 시 null" },
+    "coord_source": {
+      "enum": ["gps_photo", "gps_device", "manual_pin", "source_data", "geocoded", "failed", "mock"],
+      "description": "좌표를 얻은 방법. failed면 지도에 표시하지 않음"
+    },
+    "address": { "type": ["string", "null"], "description": "주소 (선택)" },
+    "detail_location": { "type": "string", "minLength": 1, "description": "사람이 읽는 위치 설명" },
+    "district": { "type": "string", "description": "행정구역 (시군구)" },
+    "area": { "type": "string", "description": "서비스 생활권 코드 (예: hangdong)" },
+    "place_type": {
+      "enum": ["walking_trail", "park", "street", "bus_stop", "subway", "commercial", "other"]
+    },
+    "bin_type": {
+      "enum": ["street_bin", "park_bin", "pet_bag_box", "other"],
+      "description": "pet_bag_box라도 pet_waste_status를 allowed로 가정하지 않음"
+    },
+    "waste_kind": {
+      "enum": ["general_and_recycle", "general", "recycle", "unknown"],
+      "description": "추천 우선순위용. 배변물 투기 허용을 의미하지 않음"
+    },
+    "pet_waste_status": {
+      "enum": ["allowed", "not_allowed", "unknown"],
+      "default": "unknown",
+      "description": "현장 근거 확인 전에는 반드시 unknown"
+    },
+    "bag_available": {
+      "enum": ["yes", "no", "unknown"],
+      "default": "unknown"
+    },
+    "source": { "enum": ["field_survey", "user_report", "public_data", "mock"] },
+    "source_ref": { "type": ["string", "null"], "description": "원본 추적값 (조사번호, 공공데이터 연번 등)" },
+    "source_date": { "type": ["string", "null"], "format": "date", "description": "원본 데이터 기준일" },
+    "status": { "enum": ["active", "missing", "hidden"], "default": "active" },
+    "last_verified_at": { "type": ["string", "null"], "format": "date-time", "description": "마지막 현장 확인 시각. 확인 전 null" },
+    "photo_url": { "type": ["string", "null"] },
+    "note": { "type": ["string", "null"] },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "coord_source": { "const": "failed" } } },
+      "then": { "properties": { "latitude": { "type": "null" }, "longitude": { "type": "null" } } }
+    }
+  ],
+  "additionalProperties": false
+}
