@@ -91,6 +91,7 @@ React + Vite + TypeScript + Tailwind CSS / 카카오맵 JavaScript SDK / Supabas
 | 문서 | 내용 |
 |---|---|
 | `docs/product.md` | 서비스 기획, 사용자 흐름, 화면 구성 |
+| `docs/design.md` | 디자인 토큰, 마스코트 캐릭터 규칙 (화면 작업 전 반드시 확인) |
 | `docs/data.md` | 데이터 구조, 상태값, 수집·출처 원칙 |
 | `docs/development.md` | 개발 단계(Step), 현재 진행 상황 |
 | `docs/field-survey.md` | 현장조사 계획과 기록 양식 |

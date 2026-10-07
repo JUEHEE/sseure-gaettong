@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+/*
+ * 쓰레개똥 디자인 토큰
+ * 규칙과 사용 비율은 docs/design.md 참고.
+ * Tailwind 클래스로 바로 쓸 수 있다. 예: bg-cream, text-ink, bg-sage, rounded-card, shadow-soft, font-display
+ */
+@theme {
+  /* 배경 — 화면의 대부분(약 70%)을 차지하는 따뜻한 크림 */
+  --color-cream: #F7F1E5;
+  --color-cream-deep: #EFE4CF;
+  --color-paper: #FFFDF8;
+  --color-line: #E6DAC4;
+
+  /* 글자 — 순수 검정 대신 초코 브라운 */
+  --color-ink: #3F3429;
+  --color-ink-soft: #75665A;
+
+  /* 브랜드 — 주요 행동(CTA)은 세이지 그린 하나로만 */
+  --color-sage: #657A4E;
+  --color-sage-deep: #52643F;
+  --color-sage-light: #DDE5C9;
+
+  /* 포인트 — 면적은 작게, 강조할 때만 */
+  --color-orange: #D9824B;
+  --color-butter: #E9B949;
+  --color-butter-light: #F5E2AE;
+
+  /* 캐릭터 전용 */
+  --color-fur: #F8EAD0;
+  --color-fur-light: #FFF7E8;
+  --color-choco: #8A5A3B;
+
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-display: "Jua", "Pretendard Variable", Pretendard, sans-serif;
+
+  --radius-card: 28px;
+  --radius-pill: 9999px;
+
+  --shadow-soft: 0 6px 20px -10px rgb(63 52 41 / 0.22);
+  --shadow-button: 0 8px 18px -10px rgb(82 100 63 / 0.55);
+}
+
+@layer base {
+  html,
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    word-break: keep-all;
+  }
+}

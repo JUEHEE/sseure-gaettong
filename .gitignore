@@ -18,3 +18,6 @@ data/raw/
 Thumbs.db
 .vscode/
 .idea/
+
+# TypeScript 빌드 캐시
+*.tsbuildinfo

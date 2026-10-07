@@ -6,7 +6,8 @@
 ## 현재 상태
 
 - [x] **Step 0. 프로젝트 기반** — CLAUDE.md, docs/, 데이터 구조, mock 데이터
-- [ ] Step 1 이후 진행 전
+- [~] **Step 1. 프로젝트 생성** — React + Vite + TypeScript + Tailwind 생성 완료, Vercel 배포는 아직
+- [x] **디자인 시스템 + 홈 화면** — `docs/design.md`, 홈 화면 1개 (지도 연결 전)
 
 > UI/UX는 사용자가 직접 설계한다. 아래 Step의 화면 구현은 사용자의 설계를 받은 뒤 진행한다.
 
