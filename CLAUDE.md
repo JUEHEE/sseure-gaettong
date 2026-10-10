@@ -63,7 +63,7 @@
 - 현장조사 원본 사진(GPS 포함)은 저장소에 올리지 않는다.
 
 ### 기술 스택 (예정)
-React + Vite + TypeScript + Tailwind CSS / 카카오맵 JavaScript SDK / Supabase / Vercel.
+React + Vite + TypeScript + Tailwind CSS / 지도: OpenStreetMap + Leaflet (길찾기만 카카오맵 링크) / Supabase / Vercel.
 **아직 연결하지 않는다.** 각 연결은 해당 Step에서 사용자 요청이 있을 때만 진행한다.
 
 ## 6. 데이터 원칙 (반드시 지킬 것)

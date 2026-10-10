@@ -1,16 +1,8 @@
-import { useEffect, useState } from 'react'
 import { MascotFace, MascotWalkingWithBag } from '../components/mascot/Mascot.tsx'
 import PinIcon from '../components/icons/PinIcon.tsx'
+import { go } from '../hooks/useHashRoute.ts'
 
 export default function Home() {
-  const [notice, setNotice] = useState(false)
-
-  useEffect(() => {
-    if (!notice) return
-    const timer = setTimeout(() => setNotice(false), 2200)
-    return () => clearTimeout(timer)
-  }, [notice])
-
   return (
     <div className="flex min-h-dvh justify-center bg-cream">
       <main className="relative flex w-full max-w-[430px] flex-col px-6 pt-[max(env(safe-area-inset-top),12px)] pb-[max(env(safe-area-inset-bottom),24px)]">
@@ -42,7 +34,7 @@ export default function Home() {
         {/* 주요 행동: 엄지가 닿는 화면 아래쪽에 둔다 */}
         <button
           type="button"
-          onClick={() => setNotice(true)}
+          onClick={() => go('map')}
           className="flex h-16 w-full items-center justify-center gap-3 rounded-pill bg-sage text-[18px] font-bold text-paper shadow-button transition active:scale-[0.98] active:bg-sage-deep focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-butter"
         >
           <span className="flex size-9 items-center justify-center rounded-pill bg-paper/20">
@@ -50,20 +42,6 @@ export default function Home() {
           </span>
           내 주변 쓰레기통 찾기
         </button>
-
-        {/* 지도 화면 전 임시 안내 */}
-        <div
-          role="status"
-          className={`pointer-events-none absolute inset-x-6 bottom-[calc(max(env(safe-area-inset-bottom),24px)+80px)] flex justify-center transition-all duration-300 ${
-            notice ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
-          }`}
-        >
-          {notice && (
-            <span className="rounded-pill bg-ink px-4 py-2.5 text-[14px] font-medium text-paper shadow-soft">
-              지도 화면은 다음 단계에서 만들어요
-            </span>
-          )}
-        </div>
       </main>
     </div>
   )
