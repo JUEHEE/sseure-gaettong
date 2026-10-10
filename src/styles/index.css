@@ -71,3 +71,6 @@
   border-top-left-radius: 8px;
   font-size: 10px;
 }
+.satellite .leaflet-tile-pane {
+  filter: none;
+}

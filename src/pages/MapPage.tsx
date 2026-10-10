@@ -32,6 +32,7 @@ export default function MapPage() {
   const location = useMyLocation()
   const [testPosition, setTestPosition] = useState<LatLng | null>(null)
   const [picked, setPicked] = useState<LatLng | null>(null)
+  const [satellite, setSatellite] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const mapRef = useRef<LeafletMap | null>(null)
 
@@ -74,13 +75,27 @@ export default function MapPage() {
             boundsOptions={{ padding: [12, 12] }}
             zoomControl={false}
             zoomSnap={0.25}
-            className="absolute inset-0 z-0 bg-cream-deep"
+            maxZoom={20}
+            className={`absolute inset-0 z-0 bg-cream-deep ${satellite ? 'satellite' : ''}`}
           >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-              maxZoom={19}
-            />
+            {satellite ? (
+              /* 개발용: 단지 안 같은 곳의 위치를 찍을 때 건물을 보려고 쓰는 위성사진 */
+              <TileLayer
+                key="satellite"
+                attribution="Tiles &copy; Esri"
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                maxNativeZoom={19}
+                maxZoom={20}
+              />
+            ) : (
+              <TileLayer
+                key="osm"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                maxNativeZoom={19}
+                maxZoom={20}
+              />
+            )}
 
             {/* 서비스 지역: 푸른수목원 중심 1.5km */}
             <Circle
@@ -151,6 +166,15 @@ export default function MapPage() {
             <span className="rounded-pill bg-paper px-4 py-2.5 font-display text-[16px] leading-none text-ink shadow-soft">
               {HANGDONG.name}
             </span>
+            {DEV_TOOLS && (
+              <button
+                type="button"
+                onClick={() => setSatellite((v) => !v)}
+                className="pointer-events-auto ml-auto rounded-pill bg-ink px-4 py-2.5 text-[14px] font-bold text-paper shadow-soft"
+              >
+                {satellite ? '지도' : '위성'}
+              </button>
+            )}
           </div>
 
           {/* 내 위치로 */}
