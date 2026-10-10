@@ -5,6 +5,7 @@ import { distanceM } from '../../lib/geo.ts'
 import { submitBin } from '../../lib/report.ts'
 import { clearDraft, saveDraft, type Draft } from '../../lib/draft.ts'
 import { isKakaoInApp, openInExternalBrowserUrl } from '../../lib/inApp.ts'
+import { Camera, LocationArrow, Photos } from '../icons/Symbols.tsx'
 
 type Props = {
   me: LatLng | null
@@ -35,6 +36,9 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
   useEffect(() => {
     saveDraft(kind, description)
   }, [kind, description])
+
+  /* 뒤로가기 등으로 화면을 벗어나면 기억도 지운다 (페이지가 꺼질 때는 실행되지 않아서 복원은 그대로 동작) */
+  useEffect(() => () => clearDraft(), [])
 
   const close = () => {
     clearDraft()
@@ -70,12 +74,12 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
   }
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-end justify-center bg-ink/40" onClick={close}>
+    <div className="fixed inset-0 z-[1000] flex items-end justify-center bg-ink/30" onClick={close}>
       <section
         role="dialog"
         aria-label="쓰레기통 등록"
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[92dvh] w-full max-w-[430px] overflow-y-auto rounded-t-card bg-paper px-5 pt-3 pb-[max(env(safe-area-inset-bottom),20px)]"
+        className="sheet-up max-h-[94dvh] w-full max-w-[430px] overflow-y-auto rounded-t-[var(--radius-sheet)] bg-cream px-4 pb-[max(env(safe-area-inset-bottom),16px)]"
       >
         {/* 손잡이: 아래로 끌거나 누르면 닫힌다 */}
         <button
@@ -91,26 +95,28 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
             if (start !== null && e.clientY - start > -10) close()
           }}
           onPointerCancel={() => (dragStartY.current = null)}
-          className="-mx-5 -mt-3 mb-1 flex h-9 w-[calc(100%+2.5rem)] touch-none items-center justify-center"
+          className="-mx-4 flex h-6 w-[calc(100%+2rem)] touch-none items-center justify-center"
         >
-          <span className="h-1.5 w-10 rounded-pill bg-line" />
+          <span className="h-[5px] w-9 rounded-pill bg-label-3/60" />
         </button>
-        <h2 className="font-display text-[24px] leading-tight text-ink">여기 쓰레기통 등록하기</h2>
-        <p className="mt-1 text-[14px] text-ink-soft">
-          {me
-            ? `지금 내 위치에 등록돼요${accuracyM ? ` · 오차 약 ${Math.round(accuracyM)}m` : ''}`
-            : '내 위치를 찾고 있어요'}
-        </p>
+
+        {/* iOS 내비게이션 바: 취소 · 제목 */}
+        <div className="grid h-11 grid-cols-[1fr_auto_1fr] items-center">
+          <button type="button" onClick={close} className="justify-self-start px-1 text-[17px] text-sage">
+            취소
+          </button>
+          <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-ink">쓰레기통 등록</h2>
+          <span />
+        </div>
 
         {isKakaoInApp && !photo && (
-          <div className="mt-3 rounded-2xl bg-butter-light/60 px-3 py-3 text-[13px] leading-snug text-ink">
-            <p>
-              카카오톡 안에서는 ‘사진 찍기’가 잘 안 될 수 있어요. ‘앨범에서 고르기’를 쓰거나, 다른 브라우저로
-              열어 주세요.
+          <div className="mt-2 rounded-[var(--radius-control)] bg-group px-4 py-3">
+            <p className="text-[14px] leading-snug text-label-2">
+              카카오톡 안에서는 ‘사진 찍기’가 잘 안 될 수 있어요. ‘앨범’을 쓰거나 다른 브라우저로 열어 주세요.
             </p>
             <a
               href={openInExternalBrowserUrl('/map')}
-              className="mt-2 flex h-11 items-center justify-center rounded-pill bg-ink text-[14px] font-bold text-paper"
+              className="mt-1.5 inline-block text-[15px] font-semibold text-sage"
             >
               다른 브라우저로 열기
             </a>
@@ -118,9 +124,9 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
         )}
 
         {!isKakaoInApp && restored && !photo && (
-          <p className="mt-3 rounded-2xl bg-butter-light/60 px-3 py-2.5 text-[13px] leading-snug text-ink">
-            사진을 찍는 동안 화면이 새로 열렸어요. 사진을 다시 골라 주세요. 자꾸 이러면 휴대폰 카메라로
-            먼저 찍고 ‘앨범에서 고르기’를 써 주세요.
+          <p className="mt-2 rounded-[var(--radius-control)] bg-group px-4 py-3 text-[14px] leading-snug text-label-2">
+            사진을 찍는 동안 화면이 새로 열렸어요. 사진을 다시 골라 주세요. 자꾸 이러면 휴대폰 카메라로 먼저 찍고
+            ‘앨범’에서 골라 주세요.
           </p>
         )}
 
@@ -141,47 +147,61 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
           onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
         />
         {preview ? (
-          <button
-            type="button"
-            onClick={() => albumRef.current?.click()}
-            className="mt-4 block h-44 w-full overflow-hidden rounded-card"
-          >
-            <img src={preview} alt="고른 사진" className="h-full w-full object-cover" />
-          </button>
-        ) : (
-          <div className="mt-4 flex gap-2">
-            <button
-              type="button"
-              onClick={() => cameraRef.current?.click()}
-              className="flex h-32 flex-1 flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-line bg-cream text-[15px] font-bold text-ink"
-            >
-              <span className="text-[26px] leading-none">📷</span>
-              사진 찍기
-            </button>
+          <div className="relative mt-3">
+            <img src={preview} alt="고른 사진" className="h-52 w-full rounded-[20px] object-cover" />
             <button
               type="button"
               onClick={() => albumRef.current?.click()}
-              className="flex h-32 flex-1 flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-line bg-cream text-[15px] font-bold text-ink"
+              className="glass absolute right-2.5 bottom-2.5 h-9 rounded-pill px-3.5 text-[14px] font-semibold text-ink"
             >
-              <span className="text-[26px] leading-none">🖼️</span>
-              앨범에서 고르기
+              다시 고르기
             </button>
           </div>
-        )}
-        {preview && (
-          <p className="mt-1 text-center text-[13px] text-ink-soft">사진을 누르면 다른 사진으로 바꿀 수 있어요</p>
+        ) : (
+          <div className="mt-3 grid grid-cols-2 gap-2.5">
+            {[
+              { label: '사진 찍기', Icon: Camera, ref: cameraRef },
+              { label: '앨범', Icon: Photos, ref: albumRef },
+            ].map(({ label, Icon, ref }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => ref.current?.click()}
+                className="flex h-[118px] flex-col items-center justify-center gap-2.5 rounded-[20px] bg-group transition active:scale-[0.98] active:bg-fill"
+              >
+                <span className="flex size-12 items-center justify-center rounded-pill bg-sage-light text-sage-deep">
+                  <Icon className="size-[26px]" />
+                </span>
+                <span className="text-[15px] font-semibold tracking-[-0.01em] text-ink">{label}</span>
+              </button>
+            ))}
+          </div>
         )}
 
-        {/* 종류 */}
-        <p className="mt-5 text-[14px] font-semibold text-ink">어떤 쓰레기통인가요?</p>
-        <div className="mt-2 flex gap-2">
+        {/* 위치 */}
+        <p className="mt-5 mb-1.5 px-4 text-[13px] text-label-2">위치</p>
+        <div className="flex min-h-12 items-center gap-2.5 rounded-[var(--radius-control)] bg-group px-4">
+          <LocationArrow className="size-[18px] shrink-0 text-sage" />
+          <span className="flex-1 text-[16px] tracking-[-0.01em] text-ink">
+            {me ? '지금 내 위치' : '내 위치를 찾고 있어요'}
+          </span>
+          {accuracyM !== null && (
+            <span className="text-[15px] text-label-2">오차 약 {Math.round(accuracyM)}m</span>
+          )}
+        </div>
+
+        {/* 종류: iOS 세그먼트 */}
+        <p className="mt-5 mb-1.5 px-4 text-[13px] text-label-2">어떤 쓰레기통인가요?</p>
+        <div role="radiogroup" className="flex h-9 rounded-[10px] bg-fill p-[2px]">
           {KINDS.map((k) => (
             <button
               key={k.value}
               type="button"
+              role="radio"
+              aria-checked={kind === k.value}
               onClick={() => setKind(k.value)}
-              className={`h-11 flex-1 rounded-pill text-[14px] font-bold transition ${
-                kind === k.value ? 'bg-sage text-paper' : 'bg-cream-deep text-ink-soft'
+              className={`flex-1 rounded-[8px] text-[13px] font-semibold tracking-[-0.01em] transition ${
+                kind === k.value ? 'bg-paper text-ink shadow-[0_1px_4px_rgb(63_52_41/0.14)]' : 'text-label-2'
               }`}
             >
               {k.label}
@@ -190,8 +210,8 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
         </div>
 
         {/* 위치 설명 */}
-        <label className="mt-5 block text-[14px] font-semibold text-ink" htmlFor="bin-desc">
-          어디쯤인가요? <span className="font-normal text-ink-soft">(선택)</span>
+        <label className="mt-5 mb-1.5 block px-4 text-[13px] text-label-2" htmlFor="bin-desc">
+          어디쯤인가요? (선택)
         </label>
         <input
           id="bin-desc"
@@ -199,32 +219,22 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
           maxLength={40}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="예: 철길 산책로 입구 벤치 옆"
-          className="mt-2 h-12 w-full rounded-2xl border border-line bg-cream px-4 text-[16px] text-ink outline-none placeholder:text-ink-soft/70 focus:border-sage"
+          className="h-12 w-full rounded-[var(--radius-control)] bg-group px-4 text-[17px] tracking-[-0.01em] text-ink outline-none placeholder:text-label-3"
         />
-
-        <p className="mt-4 rounded-2xl bg-butter-light/50 px-3 py-2.5 text-[13px] leading-snug text-ink">
-          등록하면 바로 다른 사람 지도에도 보여요. 배변봉투를 버려도 되는지는 운영자가 확인하기 전까지
-          ‘확인 안 됨’으로 표시돼요.
+        <p className="mt-1.5 px-4 text-[13px] leading-snug text-label-2">
+          등록하면 바로 다른 사람 지도에도 보여요. 배변봉투를 버려도 되는지는 운영자가 확인하기 전까지 ‘확인 안 됨’으로
+          표시돼요.
         </p>
 
-        {(blocked || error) && (
-          <p className="mt-3 text-[14px] font-medium text-orange">{blocked ?? error}</p>
-        )}
+        {(blocked || error) && <p className="mt-3 px-4 text-[14px] text-danger">{blocked ?? error}</p>}
 
         <button
           type="button"
           disabled={!photo || !!blocked || sending}
           onClick={submit}
-          className="mt-4 flex h-14 w-full items-center justify-center rounded-pill bg-sage text-[17px] font-bold text-paper shadow-button transition active:scale-[0.98] disabled:bg-line disabled:text-ink-soft disabled:shadow-none"
+          className="mt-5 flex h-[50px] w-full items-center justify-center rounded-[var(--radius-control)] bg-sage text-[17px] font-semibold tracking-[-0.01em] text-paper transition active:scale-[0.98] disabled:bg-fill disabled:text-label-3"
         >
-          {sending ? '올리는 중…' : photo ? '등록하기' : '사진을 먼저 찍어 주세요'}
-        </button>
-        <button
-          type="button"
-          onClick={close}
-          className="mt-2 h-12 w-full text-[15px] font-medium text-ink-soft"
-        >
-          취소
+          {sending ? '올리는 중…' : photo ? '등록하기' : '사진을 먼저 골라 주세요'}
         </button>
       </section>
     </div>

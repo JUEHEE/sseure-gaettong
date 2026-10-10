@@ -16,8 +16,7 @@ import ReportSheet from '../components/map/ReportSheet.tsx'
 import { loadDraft } from '../lib/draft.ts'
 import { myToken } from '../lib/myBins.ts'
 import { deleteMyBin } from '../lib/report.ts'
-import BackIcon from '../components/icons/BackIcon.tsx'
-import LocateIcon from '../components/icons/LocateIcon.tsx'
+import { ChevronLeft, LocationArrow, Plus } from '../components/icons/Symbols.tsx'
 
 /* 개발 중(npm run dev)에만: 지도를 눌러 테스트 위치 정하기 + 좌표 확인 */
 const DEV_TOOLS = import.meta.env.DEV
@@ -169,23 +168,23 @@ export default function MapPage() {
           </MapContainer>
 
           {/* 상단: 뒤로가기 + 지역 표시 */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center gap-2 px-4 pt-[max(env(safe-area-inset-top),14px)]">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center gap-2 px-4 pt-[max(env(safe-area-inset-top),12px)]">
             <button
               type="button"
               onClick={() => go('home')}
               aria-label="처음 화면으로"
-              className="pointer-events-auto flex size-12 items-center justify-center rounded-pill bg-paper text-ink shadow-soft active:scale-95"
+              className="glass pointer-events-auto flex size-11 items-center justify-center rounded-pill text-ink transition active:scale-95"
             >
-              <BackIcon className="size-6" />
+              <ChevronLeft className="size-[22px] -translate-x-px" />
             </button>
-            <span className="rounded-pill bg-paper px-4 py-2.5 font-display text-[16px] leading-none text-ink shadow-soft">
+            <span className="glass flex h-11 items-center rounded-pill px-4 text-[15px] font-semibold tracking-[-0.01em] text-ink">
               {HANGDONG.name}
             </span>
             {DEV_TOOLS && (
               <button
                 type="button"
                 onClick={() => setSatellite((v) => !v)}
-                className="pointer-events-auto ml-auto rounded-pill bg-ink px-4 py-2.5 text-[14px] font-bold text-paper shadow-soft"
+                className="glass pointer-events-auto ml-auto flex h-11 items-center rounded-pill px-4 text-[15px] font-semibold text-ink"
               >
                 {satellite ? '지도' : '위성'}
               </button>
@@ -197,16 +196,16 @@ export default function MapPage() {
             <button
               type="button"
               onClick={() => setReporting(true)}
-              className="absolute bottom-4 left-4 z-10 flex h-12 items-center gap-1.5 rounded-pill bg-paper px-4 text-[15px] font-bold text-ink shadow-soft active:scale-95"
+              className="glass absolute bottom-4 left-4 z-10 flex h-11 items-center gap-1.5 rounded-pill pr-4 pl-3.5 text-[15px] font-semibold tracking-[-0.01em] text-ink transition active:scale-95"
             >
-              <span className="text-[20px] leading-none text-sage">＋</span>
+              <Plus className="size-[18px] text-sage" />
               쓰레기통 등록
             </button>
           )}
 
           {notice && (
             <div className="pointer-events-none absolute inset-x-0 top-20 z-20 flex justify-center">
-              <span role="status" className="rounded-pill bg-ink px-4 py-2.5 text-[14px] font-medium text-paper shadow-soft">
+              <span role="status" className="rounded-pill bg-ink/85 px-4 py-2.5 text-[14px] font-semibold text-paper shadow-float backdrop-blur-md">
                 {notice}
               </span>
             </div>
@@ -221,7 +220,7 @@ export default function MapPage() {
                   setTestPosition(null)
                   setSelectedId(null)
                 }}
-                className="rounded-pill bg-paper px-3 py-2 text-[13px] font-medium text-ink-soft shadow-soft"
+                className="glass h-9 rounded-pill px-3 text-[13px] font-semibold text-label-2"
               >
                 테스트 위치 해제
               </button>
@@ -230,9 +229,9 @@ export default function MapPage() {
               type="button"
               onClick={recenter}
               aria-label="내 위치로 이동"
-              className="flex size-12 items-center justify-center rounded-pill bg-paper text-sage shadow-soft active:scale-95"
+              className="glass flex size-11 items-center justify-center rounded-pill text-sage transition active:scale-95"
             >
-              <LocateIcon className="size-6" />
+              <LocationArrow className="size-5" />
             </button>
           </div>
         </div>
@@ -336,7 +335,7 @@ function CoordPopup({ at, onUseAsMe }: { at: LatLng; onUseAsMe: () => void }) {
         <button
           type="button"
           onClick={onUseAsMe}
-          className="h-10 rounded-pill bg-sage text-[14px] font-bold text-paper"
+          className="h-10 rounded-xl bg-sage text-[14px] font-semibold text-paper"
         >
           여기를 내 위치로 (테스트)
         </button>
@@ -348,7 +347,7 @@ function CoordPopup({ at, onUseAsMe }: { at: LatLng; onUseAsMe: () => void }) {
               .then(() => setCopied(true))
               .catch(() => {})
           }}
-          className="h-10 rounded-pill bg-cream-deep text-[14px] font-bold text-ink"
+          className="h-10 rounded-xl bg-fill text-[14px] font-semibold text-ink"
         >
           {copied ? '복사했어요' : '좌표 복사'}
         </button>

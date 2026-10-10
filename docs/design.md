@@ -39,11 +39,11 @@ Cute · Round · Warm · Friendly · Simple · Hand-drawn · Soft colors
 
 | 역할 | 글꼴 | 사용 |
 |---|---|---|
-| 디스플레이 | **Jua** (`font-display`) | 로고, 화면의 큰 문구 1개 |
-| 본문·UI | **Pretendard** (`font-sans`) | 버튼, 설명, 정보 |
+| 로고 | **Jua** (`font-display`) | "쓰레개똥" 글자만 |
+| 본문·UI | 아이폰 SF + Apple SD 산돌고딕 / 안드로이드 Pretendard (`font-sans`) | 제목, 버튼, 설명 전부 |
 
-- Jua는 둥글고 친근하지만 많이 쓰면 유치해진다. **한 화면에 큰 문구 하나 + 로고**까지만.
-- 크기: 큰 문구 38px / 버튼 18px bold / 본문 16px / 보조 14px. 산책 중이라 14px 미만은 쓰지 않는다.
+- 2026-10-10부터 **iOS 스타일**: 큰 제목도 Jua 대신 시스템 글꼴 굵게. 귀여움은 강아지 그림과 색이 맡는다.
+- iOS 글자 크기: 큰 제목 34 bold / 시트 제목 22 bold / 본문·버튼 17 semibold / 목록 16 / 보조 15 / 설명 13. 자간은 살짝 좁게(-0.01~-0.025em).
 
 ## 4. 형태
 
@@ -52,7 +52,7 @@ Cute · Round · Warm · Friendly · Simple · Hand-drawn · Soft colors
 | 주요 버튼 | pill(`rounded-pill`), 높이 64px, 화면 아래쪽 엄지 영역 |
 | 카드 | `rounded-card`(28px) |
 | 하단 시트 | 위쪽 모서리만 28px |
-| 아이콘 | 24px 기준, 선 2.2, 끝·꺾임 round (`components/icons/`) |
+| 아이콘 | iOS SF Symbols 느낌. 24px 기준, 선 1.8~2.4, 끝·꺾임 round. **이모지 쓰지 않음** (`components/icons/Symbols.tsx`) |
 | 그림자 | `shadow-soft`, `shadow-button`만. 진하게 쓰지 않는다 |
 | 터치 영역 | 최소 48×48px |
 
@@ -99,7 +99,7 @@ Cute · Round · Warm · Friendly · Simple · Hand-drawn · Soft colors
 | 컴포넌트 | 쓰는 곳 |
 |---|---|
 | `MascotFace` | 로고, 빈 상태, 작은 안내 |
-| `MascotWalkingWithBag` | 홈 메인 일러스트 |
+| `MascotRunning` | 홈 메인 일러스트 (달리는 애니메이션) |
 
 앞으로 필요할 포즈(예정): 위치 권한 요청, 주변 후보 없음, 제보 완료
 
@@ -109,3 +109,24 @@ Cute · Round · Warm · Friendly · Simple · Hand-drawn · Soft colors
 - 텍스트는 짧게. 한 화면에 문장 2개 이하
 - 화면은 스크롤 없이 한눈에 (360×640 작은 폰 기준 확인)
 - 모바일 우선. 넓은 화면에서는 430px 폭 가운데 정렬
+
+## 7. iOS 스타일 규칙 (2026-10-10 사용자 요청)
+
+> 깔끔하고 세련된 iOS 앱처럼, 그러면서 귀엽게. "AI가 만든 것 같은" 장식(점선 테두리, 이모지, 굵은 그림자)은 쓰지 않는다.
+
+| 요소 | 규칙 |
+|---|---|
+| 지도 위 버튼·칩 | 반투명 유리(`glass` 클래스): 흐림 + 아주 옅은 그림자. 원형 44px / 캡슐 높이 44px |
+| 시트 | 위 모서리 32px, 위에 iOS 손잡이(36×5), 아래에서 올라오는 움직임(`sheet-up`) |
+| 시트 안 내용 | iOS **묶음 목록**: 크림 바탕 위에 흰 칸(`bg-group`, 모서리 14px), 칸 위에 13px 회색 머리말, 칸 아래 13px 설명 |
+| 주 버튼 | 높이 50~56px, 모서리 14~16px, 세이지, 17px semibold |
+| 선택지 2~3개 | iOS 세그먼트 컨트롤 (회색 트랙 + 흰 선택칸) |
+| 목록 한 줄 | 높이 48px 이상, 오른쪽 끝에 거리 + `>` |
+| 삭제 | 빨강(`danger`) 글자 버튼, 한 번 더 확인 |
+| 등록 화면 위 | iOS 내비게이션 바: 왼쪽 "취소", 가운데 제목 |
+
+### 달리는 강아지 (`MascotRunning`)
+- 홈 메인 그림. 0.64초마다 한 걸음: 다리 앞뒤 교차, 몸 위아래, 귀·꼬리·봉투는 한 박자 늦게.
+- 움직이는 그림이라 손그림 필터는 쓰지 않는다. 생김새·색은 5절 그대로.
+- 휴대폰 "동작 줄이기" 설정이면 멈춘다.
+

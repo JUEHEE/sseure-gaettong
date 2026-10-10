@@ -26,19 +26,40 @@
   --color-butter: #E9B949;
   --color-butter-light: #F5E2AE;
 
+  /* iOS 스타일 보조 색 — 회색 대신 따뜻한 톤 */
+  --color-fill: #EFE8DC;          /* 입력칸·세그먼트 배경 (iOS tertiarySystemFill 역할) */
+  --color-group: #FFFDF8;         /* 묶음 목록 칸 (secondarySystemGroupedBackground) */
+  --color-separator: rgb(63 52 41 / 0.12);
+  --color-label-2: rgb(63 52 41 / 0.62);   /* 보조 글자 (secondaryLabel) */
+  --color-label-3: rgb(63 52 41 / 0.36);   /* 흐린 글자 (tertiaryLabel) */
+  --color-danger: #D4553F;
+
   /* 캐릭터 전용 */
   --color-fur: #F8EAD0;
   --color-fur-light: #FFF7E8;
   --color-choco: #8A5A3B;
 
-  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* 아이폰에서는 SF + Apple SD 산돌고딕, 안드로이드에서는 Pretendard */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard Variable", Pretendard, system-ui, sans-serif;
   --font-display: "Jua", "Pretendard Variable", Pretendard, sans-serif;
 
   --radius-card: 28px;
+  --radius-sheet: 32px;
+  --radius-control: 14px;
   --radius-pill: 9999px;
 
   --shadow-soft: 0 6px 20px -10px rgb(63 52 41 / 0.22);
   --shadow-button: 0 8px 18px -10px rgb(82 100 63 / 0.55);
+  --shadow-float: 0 4px 16px -4px rgb(63 52 41 / 0.18), 0 0 0 0.5px rgb(63 52 41 / 0.06);
+  --shadow-sheet: 0 -10px 30px -18px rgb(63 52 41 / 0.35);
+}
+
+/* iOS 반투명 재질: 지도 위에 떠 있는 버튼·칩 */
+@utility glass {
+  background-color: rgb(255 253 248 / 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow: var(--shadow-float);
 }
 
 @layer base {
@@ -73,4 +94,109 @@
 }
 .satellite .leaflet-tile-pane {
   filter: none;
+}
+
+/* 달리는 강아지 (MascotRunning). 한 걸음 = 0.64초 */
+.run * {
+  transform-box: view-box;
+}
+.run-body {
+  animation: run-bob 0.64s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.run-leg-a {
+  animation: run-leg-a 0.64s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.run-leg-b {
+  animation: run-leg-b 0.64s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.run-late {
+  animation-delay: -0.08s;
+}
+.run-tail {
+  animation: run-wag 0.32s ease-in-out infinite;
+}
+.run-head {
+  animation: run-nod 0.64s cubic-bezier(0.45, 0, 0.55, 1) infinite -0.06s;
+}
+.run-ear {
+  animation: run-flop 0.64s cubic-bezier(0.45, 0, 0.55, 1) infinite -0.12s;
+}
+.run-bag {
+  animation: run-swing 0.64s cubic-bezier(0.45, 0, 0.55, 1) infinite -0.14s;
+}
+.run-shadow {
+  transform-origin: 160px 221px;
+  animation: run-shadow 0.64s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.run-ground {
+  animation: run-ground 0.64s linear infinite;
+}
+.run-speed {
+  animation: run-speed 0.64s ease-out infinite;
+}
+.run-speed-2 {
+  animation-delay: -0.21s;
+}
+.run-speed-3 {
+  animation-delay: -0.42s;
+}
+@keyframes run-bob {
+  0%, 100% { transform: translateY(-11px) rotate(-1.5deg); }
+  50% { transform: translateY(0) rotate(1deg); }
+}
+@keyframes run-leg-a {
+  0%, 100% { transform: rotate(34deg); }
+  50% { transform: rotate(-30deg) scaleY(0.92); }
+}
+@keyframes run-leg-b {
+  0%, 100% { transform: rotate(-34deg); }
+  50% { transform: rotate(30deg) scaleY(0.92); }
+}
+@keyframes run-wag {
+  0%, 100% { transform: rotate(-14deg); }
+  50% { transform: rotate(16deg); }
+}
+@keyframes run-nod {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(3deg) translateY(2px); }
+}
+@keyframes run-flop {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(12deg); }
+}
+@keyframes run-swing {
+  0%, 100% { transform: rotate(14deg); }
+  50% { transform: rotate(-12deg); }
+}
+@keyframes run-shadow {
+  0%, 100% { transform: scaleX(0.78); opacity: 0.09; }
+  50% { transform: scaleX(1); opacity: 0.16; }
+}
+@keyframes run-ground {
+  from { transform: translateX(0); }
+  to { transform: translateX(-64px); }
+}
+@keyframes run-speed {
+  0% { transform: translateX(14px); opacity: 0; }
+  35% { opacity: 1; }
+  100% { transform: translateX(-26px); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .run * {
+    animation: none !important;
+  }
+}
+
+/* iOS 시트가 아래에서 올라오는 움직임 */
+.sheet-up {
+  animation: sheet-up 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet-up {
+    animation: none;
+  }
 }
