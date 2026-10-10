@@ -5,7 +5,8 @@ import { formatDistance, walkMinutes } from '../../lib/geo.ts'
 import { bestBin, kakaoDirectionsUrl } from '../../lib/recommend.ts'
 import { spotName, type Place } from '../../lib/places.ts'
 import { MascotFace } from '../mascot/Mascot.tsx'
-import { ChevronRight, Directions, FigureWalk } from '../icons/Symbols.tsx'
+import { ChevronRight, Directions } from '../icons/Symbols.tsx'
+import { Paw } from '../icons/Stickers.tsx'
 
 export type SheetItem = { place: Place; distanceM: number | null; direction: string | null }
 
@@ -87,7 +88,7 @@ export default function RecommendSheet(props: Props) {
               </span>
               {distanceText(selected) && (
                 <span className="mt-0.5 flex items-center gap-1 text-[15px] text-label-2">
-                  <FigureWalk className="size-4 shrink-0" />
+                  <Paw className="size-4 shrink-0 text-choco/70" />
                   {distanceText(selected)}
                 </span>
               )}
@@ -119,7 +120,7 @@ export default function RecommendSheet(props: Props) {
                   </h2>
                   {distanceText(selected) && (
                     <p className="mt-1 flex items-center gap-1 text-[15px] tracking-[-0.01em] text-label-2">
-                      <FigureWalk className="size-[17px] shrink-0" />
+                      <Paw className="size-[17px] shrink-0 text-choco/70" />
                       {distanceText(selected)}
                     </p>
                   )}
