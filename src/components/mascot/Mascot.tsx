@@ -64,98 +64,94 @@ export function MascotFace({ size = 40, className }: MascotProps) {
   )
 }
 
-/* 산책 중, 배변봉투를 입에 물고 "어디다 버리지?" 하는 장면 — 홈 메인 일러스트 */
-export function MascotWalkingWithBag({ className }: { className?: string }) {
+/*
+ * 달리는 강아지 — 홈 메인 일러스트 (0.64초 반복)
+ * 다리는 앞·뒤가 엇갈려 흔들리고, 몸은 위아래로, 귀·꼬리·봉투는 한 박자 늦게 따라온다.
+ * 움직임 정의는 src/styles/index.css의 run-* 애니메이션. '동작 줄이기' 설정이면 멈춘다.
+ * 움직이는 그림이라 손그림 필터는 쓰지 않는다 (휴대폰에서 버벅이지 않게).
+ */
+export function MascotRunning({ className }: { className?: string }) {
   const uid = useId()
-  const filterId = `${uid}-hand`
   const bodyClipId = `${uid}-body`
   const bodyPath =
     'M98 152 C96 128 122 118 152 120 C184 122 210 130 212 154 C214 178 196 194 160 195 C122 196 100 180 98 152 Z'
+  const line = { stroke: DOG.line, strokeWidth: 3, strokeLinecap: 'round', strokeLinejoin: 'round' } as const
 
   return (
-    <svg
-      viewBox="0 0 320 250"
-      className={className}
-      role="img"
-      aria-label="배변봉투를 입에 물고 산책하는 강아지"
-    >
+    <svg viewBox="24 56 280 186" className={`run ${className ?? ''}`} role="img" aria-label="배변봉투를 물고 달리는 강아지">
       <defs>
-        <HandDrawnFilter id={filterId} scale={2.2} />
         <clipPath id={bodyClipId}>
           <path d={bodyPath} />
         </clipPath>
       </defs>
 
-      {/* 배경: 부드러운 덩어리와 땅 */}
-      <path
-        d="M58 150 C48 92 100 48 166 50 C236 52 282 96 278 150 C274 206 222 230 160 228 C94 226 66 202 58 150 Z"
-        fill="#DDE5C9"
-      />
-      <g
-        filter={`url(#${filterId})`}
-        stroke={DOG.line}
-        strokeWidth={3}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M38 214 C100 209 220 218 286 212" fill="none" stroke="#CDBFA6" />
-        <path d="M58 212 l-3 -10 M64 212 l1 -12 M70 212 l4 -9" fill="none" stroke="#657A4E" strokeWidth={2.6} />
-        <path d="M262 213 l-3 -9 M268 213 l1 -11 M274 213 l4 -8" fill="none" stroke="#657A4E" strokeWidth={2.6} />
+      {/* 땅: 점선이 왼쪽으로 흘러가서 달리는 것처럼 보인다 */}
+      <g className="run-ground" stroke="#CDBFA6" strokeWidth={3} strokeLinecap="round">
+        {Array.from({ length: 8 }, (_, i) => (
+          <path key={i} d={`M${20 + i * 64} 222 h28`} />
+        ))}
+      </g>
+      <ellipse className="run-shadow" cx="160" cy="221" rx="66" ry="6" fill="#3F3429" opacity="0.14" />
 
-        {/* 리드줄: 화면 밖 보호자 손으로 이어진다 */}
-        <path d="M186 138 C150 98 90 72 -10 66" fill="none" stroke={DOG.collar} strokeWidth={3.2} />
-
-        {/* 꼬리 + 살랑 표시 */}
-        <path d="M102 146 C86 142 80 126 86 114 C89 109 95 111 94 117 C93 128 99 136 108 138 Z" fill={DOG.fur} />
-        <path d="M74 112 q-7 -3 -7 -11 M80 100 q-4 -5 -1 -12" fill="none" strokeWidth={2.4} />
-
-        {/* 다리: 뒤쪽 다리는 한 톤 어둡게 */}
-        <rect x="122" y="176" width="16" height="33" rx="8" fill={DOG.furShade} />
-        <rect x="188" y="174" width="16" height="33" rx="8" fill={DOG.furShade} />
-        <rect x="104" y="178" width="17" height="34" rx="8.5" fill={DOG.fur} transform="rotate(8 112 182)" />
-        <rect x="168" y="178" width="17" height="34" rx="8.5" fill={DOG.fur} transform="rotate(-10 176 182)" />
-
-        {/* 몸 + 등 무늬 */}
-        <path d={bodyPath} fill={DOG.fur} />
-        <g clipPath={`url(#${bodyClipId})`} stroke="none">
-          <ellipse cx="130" cy="132" rx="20" ry="12" fill={DOG.ear} />
-        </g>
-        <path d={bodyPath} fill="none" />
-
-        {/* 머리 */}
-        <circle cx="206" cy="106" r="40" fill={DOG.fur} />
-        <path d="M186 74 C166 74 154 98 158 122 C161 138 178 140 184 128 C190 114 196 94 198 80 Z" fill={DOG.ear} />
-        <ellipse cx="232" cy="120" rx="19" ry="14" fill={DOG.muzzle} />
-        <ellipse cx="249" cy="112" rx="6.5" ry="5" fill={DOG.line} stroke="none" />
-        <path d="M236 127 Q242 131 248 127" fill="none" strokeWidth={2.4} />
-
-        {/* 목줄 */}
-        <path d="M180 132 C188 142 200 147 214 146" fill="none" stroke={DOG.collar} strokeWidth={6} />
-
-        {/* 입에 문 배변봉투 */}
-        <path d="M244 141 C237 136 236 129 242 129 M244 141 C251 136 252 129 246 129" fill="none" strokeWidth={2.4} />
-        <path d="M238 143 C229 156 229 172 240 178 C252 184 265 174 263 160 C261 151 256 146 250 143 Z" fill={DOG.bag} />
-        <path d="M238 143 Q244 147 250 143" fill="none" strokeWidth={2.4} />
-
-        {/* 물음표 말풍선 */}
-        <path d="M252 74 L244 88 L262 78" fill="#FFFDF8" />
-        <circle cx="270" cy="58" r="21" fill="#FFFDF8" />
+      {/* 속도선 */}
+      <g stroke="#CDBFA6" strokeWidth={3} strokeLinecap="round">
+        <path className="run-speed" d="M44 128 h26" />
+        <path className="run-speed run-speed-2" d="M30 154 h34" />
+        <path className="run-speed run-speed-3" d="M50 180 h20" />
       </g>
 
-      {/* 눈·볼·물음표는 필터 없이 또렷하게 */}
-      <circle cx="216" cy="98" r="4.6" fill={DOG.line} />
-      <circle cx="217.6" cy="96.4" r="1.4" fill="#FFFDF8" />
-      <ellipse cx="219" cy="119" rx="7" ry="4" fill={DOG.blush} opacity="0.4" />
-      <text
-        x="270"
-        y="68"
-        textAnchor="middle"
-        fontFamily="Jua, sans-serif"
-        fontSize="28"
-        fill="#D9824B"
-      >
-        ?
-      </text>
+      <g transform="translate(-12 6)">
+        <g className="run-body">
+          {/* 뒤쪽 다리 (한 톤 어둡게) */}
+          <rect className="run-leg-b run-late" x="122" y="168" width="16" height="40" rx="8" fill={DOG.furShade} {...line} style={{ transformOrigin: '130px 172px' }} />
+          <rect className="run-leg-a run-late" x="188" y="166" width="16" height="40" rx="8" fill={DOG.furShade} {...line} style={{ transformOrigin: '196px 170px' }} />
+
+          {/* 꼬리 */}
+          <path
+            className="run-tail"
+            d="M102 146 C86 142 80 126 86 114 C89 109 95 111 94 117 C93 128 99 136 108 138 Z"
+            fill={DOG.fur}
+            {...line}
+            style={{ transformOrigin: '104px 142px' }}
+          />
+
+          {/* 앞쪽 다리 */}
+          <rect className="run-leg-a" x="104" y="170" width="17" height="42" rx="8.5" fill={DOG.fur} {...line} style={{ transformOrigin: '112px 174px' }} />
+          <rect className="run-leg-b" x="168" y="170" width="17" height="42" rx="8.5" fill={DOG.fur} {...line} style={{ transformOrigin: '176px 174px' }} />
+
+          {/* 몸 + 등 무늬 */}
+          <path d={bodyPath} fill={DOG.fur} />
+          <g clipPath={`url(#${bodyClipId})`}>
+            <ellipse cx="130" cy="132" rx="20" ry="12" fill={DOG.ear} />
+          </g>
+          <path d={bodyPath} fill="none" {...line} />
+
+          {/* 머리: 몸보다 살짝 늦게 끄덕인다 */}
+          <g className="run-head" style={{ transformOrigin: '190px 136px' }}>
+            {/* 입에 문 배변봉투: 대롱대롱 */}
+            <g className="run-bag" style={{ transformOrigin: '244px 132px' }}>
+              <path d="M244 141 C237 136 236 129 242 129 M244 141 C251 136 252 129 246 129" fill="none" {...line} strokeWidth={2.4} />
+              <path d="M238 143 C229 156 229 172 240 178 C252 184 265 174 263 160 C261 151 256 146 250 143 Z" fill={DOG.bag} {...line} />
+              <path d="M238 143 Q244 147 250 143" fill="none" {...line} strokeWidth={2.4} />
+            </g>
+            <circle cx="206" cy="106" r="40" fill={DOG.fur} {...line} />
+            <path
+              className="run-ear"
+              d="M186 74 C166 74 154 98 158 122 C161 138 178 140 184 128 C190 114 196 94 198 80 Z"
+              fill={DOG.ear}
+              {...line}
+              style={{ transformOrigin: '192px 78px' }}
+            />
+            <ellipse cx="232" cy="120" rx="19" ry="14" fill={DOG.muzzle} {...line} />
+            <ellipse cx="249" cy="112" rx="6.5" ry="5" fill={DOG.line} />
+            <path d="M236 127 Q242 131 248 127" fill="none" {...line} strokeWidth={2.4} />
+            <path d="M180 132 C188 142 200 147 214 146" fill="none" stroke={DOG.collar} strokeWidth={6} strokeLinecap="round" />
+            <circle cx="216" cy="98" r="4.6" fill={DOG.line} />
+            <circle cx="217.6" cy="96.4" r="1.4" fill="#FFFDF8" />
+            <ellipse cx="219" cy="119" rx="7" ry="4" fill={DOG.blush} opacity="0.4" />
+          </g>
+        </g>
+      </g>
     </svg>
   )
 }
