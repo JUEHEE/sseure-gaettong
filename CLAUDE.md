@@ -85,7 +85,10 @@ React + Vite + TypeScript + Tailwind CSS / 지도: OpenStreetMap + Leaflet (길�
    - 지오코딩 결과 저장은 이용 근거가 공식 확인된 서비스만 사용한다 (SGIS는 공식 문의 중).
 7. 데이터 출처는 `source`, `source_ref`, `source_date`로 추적 가능하게 남긴다.
 8. **mock 데이터는 실제 데이터처럼 보이게 만들지 않는다.** `source: "mock"`, 설명에 `[MOCK]` 표시를 붙인다.
-9. 사용자 제보는 `bins`를 자동으로 바꾸지 않는다. 운영자가 확인 후 반영한다.
+9. **사용자가 등록한 새 쓰레기통은 바로 지도에 보인다** (2026-10-10 사용자 결정).
+   - 대신 `source = user_report`, `pet_waste_status`·`bag_available`은 항상 `unknown`으로만 들어간다 (서버 규칙으로 강제).
+   - 기존 쓰레기통의 수정·삭제는 사용자가 할 수 없다. 운영자가 Supabase 대시보드에서 한다.
+   - 서버 설정: `supabase/setup.sql`
 
 상세 스키마: `docs/data.md`, `data/schema/bin.schema.json`
 
