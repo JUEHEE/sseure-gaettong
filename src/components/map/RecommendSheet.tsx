@@ -33,6 +33,7 @@ const WASTE_LABEL: Record<WasteKind, string> = {
 /* 걸어갈 만한 거리(3km)까지만 도보 시간을 보여준다. 그보다 멀면 직선거리만 */
 function distanceText(item: SheetItem): string | null {
   if (item.distanceM === null) return null
+  if (item.distanceM < 15) return '바로 근처예요'
   if (item.distanceM > 3000) return `${item.direction} · 직선 ${formatDistance(item.distanceM)}`
   return `${item.direction} · ${formatDistance(item.distanceM)} · 도보 ${walkMinutes(item.distanceM)}분`
 }
