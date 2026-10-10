@@ -1,4 +1,5 @@
 import type { LatLng, PlacedBin } from '../types/bin.ts'
+import type { Place } from './places.ts'
 import { distanceM } from './geo.ts'
 
 /*
@@ -15,23 +16,33 @@ function weight(bin: PlacedBin): number | null {
   return 1.5 // waste_kind 확인 안 됨
 }
 
-export type Candidate = { bin: PlacedBin; distanceM: number }
+/* 장소의 가중치 = 그 장소에서 가장 버리기 좋은 통의 가중치 */
+export function bestBin(place: Place): { bin: PlacedBin; weight: number } | null {
+  let best: { bin: PlacedBin; weight: number } | null = null
+  for (const bin of place.bins) {
+    const w = weight(bin)
+    if (w !== null && (!best || w < best.weight)) best = { bin, weight: w }
+  }
+  return best
+}
 
-export function recommend(me: LatLng, bins: PlacedBin[], count = 3): Candidate[] {
-  return bins
-    .flatMap((bin) => {
-      const w = weight(bin)
-      if (w === null) return []
-      const d = distanceM(me, { lat: bin.latitude, lng: bin.longitude })
-      return [{ bin, distanceM: d, score: d * w }]
+export type Candidate = { place: Place; distanceM: number }
+
+export function recommend(me: LatLng, places: Place[], count = 3): Candidate[] {
+  return places
+    .flatMap((place) => {
+      const best = bestBin(place)
+      if (!best) return []
+      const d = distanceM(me, place)
+      return [{ place, distanceM: d, score: d * best.weight }]
     })
     .sort((a, b) => a.score - b.score)
     .slice(0, count)
-    .map(({ bin, distanceM }) => ({ bin, distanceM }))
+    .map(({ place, distanceM }) => ({ place, distanceM }))
 }
 
 /* 외부 지도 앱 길찾기 (앱 안에서 길찾기는 만들지 않는다) */
-export function kakaoDirectionsUrl(bin: PlacedBin): string {
-  const name = encodeURIComponent(bin.detail_location.replace(/,/g, ' '))
-  return `https://map.kakao.com/link/to/${name},${bin.latitude},${bin.longitude}`
+export function kakaoDirectionsUrl(place: Place): string {
+  const name = encodeURIComponent(place.name.replace(/,/g, ' '))
+  return `https://map.kakao.com/link/to/${name},${place.lat},${place.lng}`
 }

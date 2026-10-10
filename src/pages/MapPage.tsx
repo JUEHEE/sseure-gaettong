@@ -3,13 +3,14 @@ import { Circle, MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } 
 import type { Map as LeafletMap } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { HANGDONG } from '../config/areas.ts'
-import { bins, usingMock } from '../data/bins.ts'
+import { bins } from '../data/bins.ts'
 import { useMyLocation } from '../hooks/useMyLocation.ts'
 import { go } from '../hooks/useHashRoute.ts'
 import { directionLabel, distanceM } from '../lib/geo.ts'
 import { recommend } from '../lib/recommend.ts'
-import type { LatLng, PlacedBin } from '../types/bin.ts'
-import { binIcon, meIcon } from '../components/map/markers.ts'
+import { groupPlaces, type Place } from '../lib/places.ts'
+import type { LatLng } from '../types/bin.ts'
+import { meIcon, placeIcon } from '../components/map/markers.ts'
 import RecommendSheet, { type SheetItem } from '../components/map/RecommendSheet.tsx'
 import BackIcon from '../components/icons/BackIcon.tsx'
 import LocateIcon from '../components/icons/LocateIcon.tsx'
@@ -20,6 +21,8 @@ const DEV_TOOLS = import.meta.env.DEV
 /* 처음 열 때 서비스 지역 원 전체가 보이도록 */
 const dLat = HANGDONG.radiusM / 111320
 const dLng = HANGDONG.radiusM / (111320 * Math.cos((HANGDONG.center.lat * Math.PI) / 180))
+const places = groupPlaces(bins)
+
 const AREA_BOUNDS: [[number, number], [number, number]] = [
   [HANGDONG.center.lat - dLat, HANGDONG.center.lng - dLng],
   [HANGDONG.center.lat + dLat, HANGDONG.center.lng + dLng],
@@ -35,26 +38,24 @@ export default function MapPage() {
   const me: LatLng | null =
     testPosition ?? (location.status === 'ok' ? location.position : null)
 
-  const candidates = useMemo(() => (me ? recommend(me, bins) : []), [me])
+  const candidates = useMemo(() => (me ? recommend(me, places) : []), [me])
 
-  const toItem = (bin: PlacedBin): SheetItem => {
-    const at = { lat: bin.latitude, lng: bin.longitude }
-    return me
-      ? { bin, distanceM: distanceM(me, at), direction: directionLabel(me, at) }
-      : { bin, distanceM: null, direction: null }
-  }
+  const toItem = (place: Place): SheetItem =>
+    me
+      ? { place, distanceM: distanceM(me, place), direction: directionLabel(me, place) }
+      : { place, distanceM: null, direction: null }
 
-  const selectedBin =
-    bins.find((b) => b.id === selectedId) ?? candidates[0]?.bin ?? null
-  const selected = selectedBin ? toItem(selectedBin) : null
-  const isTopPick = !!selectedBin && selectedBin.id === candidates[0]?.bin.id
+  const selectedPlace =
+    places.find((p) => p.key === selectedId) ?? candidates[0]?.place ?? null
+  const selected = selectedPlace ? toItem(selectedPlace) : null
+  const isTopPick = !!selectedPlace && selectedPlace.key === candidates[0]?.place.key
   /* 추천 1위가 실제로도 가장 가까운 곳인지 (재활용 전용 등은 순위가 밀릴 수 있다) */
   const isClosest =
     isTopPick && candidates.every((c) => c.distanceM >= candidates[0].distanceM)
   const alternatives = candidates
-    .filter((c) => c.bin.id !== selectedBin?.id)
+    .filter((c) => c.place.key !== selectedPlace?.key)
     .slice(0, 2)
-    .map((c) => toItem(c.bin))
+    .map((c) => toItem(c.place))
 
   const outsideArea = !!me && distanceM(me, HANGDONG.center) > HANGDONG.radiusM
 
@@ -95,13 +96,13 @@ export default function MapPage() {
               interactive={false}
             />
 
-            {bins.map((bin) => (
+            {places.map((place) => (
               <Marker
-                key={bin.id}
-                position={[bin.latitude, bin.longitude]}
-                icon={binIcon(bin, bin.id === selectedBin?.id, usingMock)}
-                zIndexOffset={bin.id === selectedBin?.id ? 1000 : 0}
-                eventHandlers={{ click: () => setSelectedId(bin.id) }}
+                key={place.key}
+                position={[place.lat, place.lng]}
+                icon={placeIcon(place, place.key === selectedPlace?.key)}
+                zIndexOffset={place.key === selectedPlace?.key ? 1000 : 0}
+                eventHandlers={{ click: () => setSelectedId(place.key) }}
               />
             ))}
 
@@ -150,9 +151,6 @@ export default function MapPage() {
             <span className="rounded-pill bg-paper px-4 py-2.5 font-display text-[16px] leading-none text-ink shadow-soft">
               {HANGDONG.name}
             </span>
-            {usingMock && (
-              <span className="rounded-pill bg-ink px-3 py-2 text-[12px] font-bold text-paper">MOCK 데이터</span>
-            )}
           </div>
 
           {/* 내 위치로 */}
@@ -187,9 +185,9 @@ export default function MapPage() {
           alternatives={alternatives}
           outsideArea={outsideArea}
           canPickTestLocation={DEV_TOOLS}
-          onSelect={(bin) => {
-            setSelectedId(bin.id)
-            mapRef.current?.panTo([bin.latitude, bin.longitude])
+          onSelect={(place) => {
+            setSelectedId(place.key)
+            mapRef.current?.panTo([place.lat, place.lng])
           }}
         />
       </div>

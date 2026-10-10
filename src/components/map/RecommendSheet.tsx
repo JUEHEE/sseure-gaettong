@@ -1,11 +1,12 @@
-import type { PlacedBin, WasteKind } from '../../types/bin.ts'
+import type { WasteKind } from '../../types/bin.ts'
 import type { LocationState } from '../../hooks/useMyLocation.ts'
 import { formatDistance, walkMinutes } from '../../lib/geo.ts'
-import { kakaoDirectionsUrl } from '../../lib/recommend.ts'
+import { bestBin, kakaoDirectionsUrl } from '../../lib/recommend.ts'
+import { spotName, type Place } from '../../lib/places.ts'
 import { MascotFace } from '../mascot/Mascot.tsx'
 import WalkIcon from '../icons/WalkIcon.tsx'
 
-export type SheetItem = { bin: PlacedBin; distanceM: number | null; direction: string | null }
+export type SheetItem = { place: Place; distanceM: number | null; direction: string | null }
 
 type Props = {
   location: LocationState
@@ -14,7 +15,7 @@ type Props = {
   alternatives: SheetItem[]
   outsideArea: boolean
   canPickTestLocation: boolean
-  onSelect: (bin: PlacedBin) => void
+  onSelect: (place: Place) => void
 }
 
 const WASTE_LABEL: Record<WasteKind, string> = {
@@ -31,6 +32,8 @@ function distanceText(item: SheetItem): string | null {
 
 export default function RecommendSheet(props: Props) {
   const { location, selected, label, alternatives, outsideArea, canPickTestLocation, onSelect } = props
+  const main = selected ? (bestBin(selected.place)?.bin ?? selected.place.bins[0]) : null
+  const many = !!selected && selected.place.bins.length > 1
 
   return (
     <section className="rounded-t-card bg-paper px-5 pt-3 pb-[max(env(safe-area-inset-bottom),20px)] shadow-[0_-8px_24px_-12px_rgb(63_52_41/0.25)]">
@@ -38,7 +41,7 @@ export default function RecommendSheet(props: Props) {
 
       {!selected && <LocationMessage location={location} canPickTestLocation={canPickTestLocation} />}
 
-      {selected && (
+      {selected && main && (
         <>
           {outsideArea && (
             <p className="mb-3 rounded-2xl bg-butter-light/60 px-3 py-2 text-[13px] leading-snug text-ink">
@@ -52,7 +55,7 @@ export default function RecommendSheet(props: Props) {
                 {label}
               </p>
               <h2 className="mt-1 text-[20px] leading-snug font-bold text-ink">
-                {selected.bin.detail_location}
+                {selected.place.name}
               </h2>
               {distanceText(selected) && (
                 <p className="mt-1.5 flex items-center gap-1.5 text-[15px] text-ink-soft">
@@ -61,28 +64,50 @@ export default function RecommendSheet(props: Props) {
                 </p>
               )}
             </div>
-            {selected.bin.photo_url && (
+            {!many && main.photo_url && (
               <img
-                src={selected.bin.photo_url}
+                src={main.photo_url}
                 alt=""
                 className="size-[76px] shrink-0 rounded-2xl object-cover"
               />
             )}
           </div>
 
+          {many && (
+            <div className="mt-3">
+              <p className="text-[13px] font-semibold text-ink-soft">
+                이곳에 쓰레기통 {selected.place.bins.length}개
+              </p>
+              <ul className="-mx-5 mt-1.5 flex gap-2 overflow-x-auto px-5 pb-1">
+                {selected.place.bins.map((bin) => (
+                  <li key={bin.id} className="w-[92px] shrink-0">
+                    {bin.photo_url ? (
+                      <img src={bin.photo_url} alt="" className="h-[92px] w-full rounded-2xl object-cover" />
+                    ) : (
+                      <div className="h-[92px] w-full rounded-2xl bg-cream-deep" />
+                    )}
+                    <p className="mt-1 truncate text-center text-[13px] text-ink">{spotName(bin)}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="mt-3 flex flex-wrap gap-1.5">
             <span className="rounded-pill bg-sage-light px-2.5 py-1 text-[13px] font-medium text-sage-deep">
-              {WASTE_LABEL[selected.bin.waste_kind]}
+              {WASTE_LABEL[main.waste_kind]}
             </span>
             <span className="rounded-pill bg-cream-deep px-2.5 py-1 text-[13px] font-medium text-ink-soft">
-              {selected.bin.pet_waste_status === 'allowed'
-                ? '배변봉투 가능 (확인됨)'
+              {main.pet_waste_status === 'allowed'
+                ? main.note?.includes('운영자 현장 확인')
+                  ? '배변봉투 가능 (운영자 확인)'
+                  : '배변봉투 가능 (확인됨)'
                 : '배변봉투 가능 여부 확인 안 됨'}
             </span>
           </div>
 
           <a
-            href={kakaoDirectionsUrl(selected.bin)}
+            href={kakaoDirectionsUrl(selected.place)}
             target="_blank"
             rel="noreferrer"
             className="mt-4 flex h-14 w-full items-center justify-center rounded-pill bg-sage text-[17px] font-bold text-paper shadow-button transition active:scale-[0.98] active:bg-sage-deep"
@@ -95,13 +120,13 @@ export default function RecommendSheet(props: Props) {
               <p className="mb-1.5 text-[13px] font-semibold text-ink-soft">다른 후보</p>
               <ul className="divide-y divide-line">
                 {alternatives.map((item) => (
-                  <li key={item.bin.id}>
+                  <li key={item.place.key}>
                     <button
                       type="button"
-                      onClick={() => onSelect(item.bin)}
+                      onClick={() => onSelect(item.place)}
                       className="flex min-h-12 w-full items-center justify-between gap-3 py-2 text-left"
                     >
-                      <span className="truncate text-[15px] text-ink">{item.bin.detail_location}</span>
+                      <span className="truncate text-[15px] text-ink">{item.place.name}</span>
                       {item.distanceM !== null && (
                         <span className="shrink-0 text-[14px] text-ink-soft">
                           {formatDistance(item.distanceM)}
