@@ -1,5 +1,5 @@
 import { MascotFace, MascotRunning } from '../components/mascot/Mascot.tsx'
-import { MapPin } from '../components/icons/Symbols.tsx'
+import { Paw } from '../components/icons/Stickers.tsx'
 import { go } from '../hooks/useRoute.ts'
 import { useBins } from '../hooks/useBins.ts'
 
@@ -39,7 +39,7 @@ export default function Home() {
             onClick={() => go('map')}
             className="flex h-[50px] items-center gap-2 rounded-pill bg-sage pr-6 pl-5 text-[17px] font-semibold tracking-[-0.015em] text-paper shadow-[0_6px_16px_-8px_rgb(82_100_63/0.6)] transition active:scale-[0.97] active:bg-sage-deep"
           >
-            <MapPin className="size-5" />
+            <Paw className="size-5 text-fur" />
             내 주변 쓰레기통 찾기
           </button>
           <p className="text-[13px] tracking-[-0.01em] text-label-2">

@@ -16,7 +16,8 @@ import ReportSheet from '../components/map/ReportSheet.tsx'
 import { loadDraft } from '../lib/draft.ts'
 import { myToken } from '../lib/myBins.ts'
 import { deleteMyBin } from '../lib/report.ts'
-import { ChevronLeft, LocationArrow, Plus } from '../components/icons/Symbols.tsx'
+import { ChevronLeft, LocationArrow } from '../components/icons/Symbols.tsx'
+import { BinSticker } from '../components/icons/Stickers.tsx'
 
 /* 개발 중(npm run dev)에만: 지도를 눌러 테스트 위치 정하기 + 좌표 확인 */
 const DEV_TOOLS = import.meta.env.DEV
@@ -198,7 +199,7 @@ export default function MapPage() {
               onClick={() => setReporting(true)}
               className="glass absolute bottom-4 left-4 z-10 flex h-11 items-center gap-1.5 rounded-pill pr-4 pl-3.5 text-[15px] font-semibold tracking-[-0.01em] text-ink transition active:scale-95"
             >
-              <Plus className="size-[18px] text-sage" />
+              <BinSticker className="-my-1 size-[26px] [&>svg]:size-full" />
               쓰레기통 등록
             </button>
           )}

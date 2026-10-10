@@ -1,38 +1,34 @@
 import L from 'leaflet'
 import type { Place } from '../../lib/places.ts'
 import { bestBin } from '../../lib/recommend.ts'
+import { binStickerSvg } from '../icons/Stickers.tsx'
 
-/* 마커는 HTML로 그린다. 색 규칙: 일반 포함 = 세이지, 재활용만 = 버터, 확인 안 됨 = 잉크 소프트 */
-const BIN_SVG =
-  '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 7.5h13"/><path d="M10 4.5h4"/><path d="M7 7.5l.9 11.2a1.8 1.8 0 0 0 1.8 1.6h4.6a1.8 1.8 0 0 0 1.8-1.6L17 7.5"/></svg>'
-
-function placeColor(place: Place): string {
-  const bin = bestBin(place)?.bin ?? place.bins[0]
-  if (bin.pet_waste_status === 'allowed' || bin.waste_kind === 'general' || bin.waste_kind === 'general_and_recycle')
-    return 'bg-sage text-paper'
-  if (bin.waste_kind === 'recycle') return 'bg-butter text-ink'
-  return 'bg-ink-soft text-paper'
-}
-
+/*
+ * 마커 = 크림 원 + 초코 외곽선 + 쓰레기통 스티커 (마스코트와 같은 화풍)
+ * 색: 일반 = 세이지, 재활용만 = 버터, 확인 안 됨 = 베이지
+ */
 export function placeIcon(place: Place, selected: boolean): L.DivIcon {
-  const size = selected ? 46 : 38
-  const ring = selected ? 'ring-4 ring-butter/70' : ''
+  const bin = bestBin(place)?.bin ?? place.bins[0]
+  const size = selected ? 50 : 40
+  const sticker = Math.round(size * 0.66)
+  const halo = selected ? 'box-shadow:0 0 0 5px rgb(242 207 114 / 0.7), 0 6px 14px -6px rgb(63 52 41 / 0.45);' : 'box-shadow:0 4px 10px -5px rgb(63 52 41 / 0.45);'
   const count =
     place.bins.length > 1
-      ? `<span class="absolute -top-1.5 -right-1.5 flex size-[22px] items-center justify-center rounded-pill border-2 border-paper bg-orange text-[12px] font-bold text-paper">${place.bins.length}</span>`
+      ? `<span class="absolute -top-1 -right-1 flex size-[20px] items-center justify-center rounded-pill border-2 border-ink bg-orange text-[11px] font-bold text-paper">${place.bins.length}</span>`
       : ''
   return L.divIcon({
     className: '',
-    iconSize: [size, size + 8],
-    iconAnchor: [size / 2, size + 8],
+    iconSize: [size, size + 9],
+    iconAnchor: [size / 2, size + 9],
     html: `
       <div class="relative flex flex-col items-center" style="width:${size}px">
-        <div class="relative flex items-center justify-center rounded-pill border-[2.5px] border-paper shadow-soft ${placeColor(place)} ${ring}" style="width:${size}px;height:${size}px">${BIN_SVG}${count}</div>
-        <div class="-mt-[3px] h-0 w-0 border-x-[6px] border-t-[9px] border-x-transparent border-t-paper"></div>
+        <div class="relative flex items-center justify-center rounded-pill border-2 border-ink bg-paper" style="width:${size}px;height:${size}px;${halo}">${binStickerSvg(bin.waste_kind, sticker)}${count}</div>
+        <svg width="14" height="10" viewBox="0 0 14 10" class="-mt-[2px]" aria-hidden="true"><path d="M1 1 L7 8.5 L13 1" fill="#FFFDF8" stroke="#3F3429" stroke-width="2" stroke-linejoin="round"/></svg>
       </div>`,
   })
 }
 
+/* 내 위치: 오렌지 점 + 퍼지는 고리 */
 export const meIcon = L.divIcon({
   className: '',
   iconSize: [28, 28],

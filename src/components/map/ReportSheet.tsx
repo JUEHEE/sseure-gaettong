@@ -5,7 +5,7 @@ import { distanceM } from '../../lib/geo.ts'
 import { submitBin } from '../../lib/report.ts'
 import { clearDraft, saveDraft, type Draft } from '../../lib/draft.ts'
 import { isKakaoInApp, openInExternalBrowserUrl } from '../../lib/inApp.ts'
-import { Camera, LocationArrow, Photos } from '../icons/Symbols.tsx'
+import { Camera, LocationArrow } from '../icons/Symbols.tsx'
 
 type Props = {
   me: LatLng | null
@@ -28,8 +28,7 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
   const [description, setDescription] = useState(restored?.description ?? '')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const cameraRef = useRef<HTMLInputElement>(null)
-  const albumRef = useRef<HTMLInputElement>(null)
+  const photoRef = useRef<HTMLInputElement>(null)
   const dragStartY = useRef<number | null>(null)
 
   /* 등록 화면이 열려 있는 동안 내용을 기억해 둔다 (카메라 다녀오다 페이지가 꺼질 때 대비) */
@@ -112,7 +111,7 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
         {isKakaoInApp && !photo && (
           <div className="mt-2 rounded-[var(--radius-control)] bg-group px-4 py-3">
             <p className="text-[14px] leading-snug text-label-2">
-              카카오톡 안에서는 ‘사진 찍기’가 잘 안 될 수 있어요. ‘앨범’을 쓰거나 다른 브라우저로 열어 주세요.
+              카카오톡 안에서는 카메라로 바로 찍으면 잘 안 될 수 있어요. 앨범에서 고르거나 다른 브라우저로 열어 주세요.
             </p>
             <a
               href={openInExternalBrowserUrl('/map')}
@@ -126,21 +125,13 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
         {!isKakaoInApp && restored && !photo && (
           <p className="mt-2 rounded-[var(--radius-control)] bg-group px-4 py-3 text-[14px] leading-snug text-label-2">
             사진을 찍는 동안 화면이 새로 열렸어요. 사진을 다시 골라 주세요. 자꾸 이러면 휴대폰 카메라로 먼저 찍고
-            ‘앨범’에서 골라 주세요.
+            앨범에서 골라 주세요.
           </p>
         )}
 
-        {/* 사진: 카메라로 바로 찍기 / 앨범에서 고르기 */}
+        {/* 사진: 버튼 하나. 누르면 휴대폰이 카메라·앨범 중 고르게 해 준다 */}
         <input
-          ref={cameraRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="hidden"
-          onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-        />
-        <input
-          ref={albumRef}
+          ref={photoRef}
           type="file"
           accept="image/*"
           className="hidden"
@@ -148,34 +139,27 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
         />
         {preview ? (
           <div className="relative mt-3">
-            <img src={preview} alt="고른 사진" className="h-52 w-full rounded-[20px] object-cover" />
+            <img src={preview} alt="고른 사진" className="h-52 w-full rounded-[22px] object-cover" />
             <button
               type="button"
-              onClick={() => albumRef.current?.click()}
+              onClick={() => photoRef.current?.click()}
               className="glass absolute right-2.5 bottom-2.5 h-9 rounded-pill px-3.5 text-[14px] font-semibold text-ink"
             >
               다시 고르기
             </button>
           </div>
         ) : (
-          <div className="mt-3 grid grid-cols-2 gap-2.5">
-            {[
-              { label: '사진 찍기', Icon: Camera, ref: cameraRef },
-              { label: '앨범', Icon: Photos, ref: albumRef },
-            ].map(({ label, Icon, ref }) => (
-              <button
-                key={label}
-                type="button"
-                onClick={() => ref.current?.click()}
-                className="flex h-[118px] flex-col items-center justify-center gap-2.5 rounded-[20px] bg-group transition active:scale-[0.98] active:bg-fill"
-              >
-                <span className="flex size-12 items-center justify-center rounded-pill bg-sage-light text-sage-deep">
-                  <Icon className="size-[26px]" />
-                </span>
-                <span className="text-[15px] font-semibold tracking-[-0.01em] text-ink">{label}</span>
-              </button>
-            ))}
-          </div>
+          <button
+            type="button"
+            onClick={() => photoRef.current?.click()}
+            className="mt-3 flex h-[150px] w-full flex-col items-center justify-center rounded-[22px] bg-group transition active:scale-[0.98] active:bg-fill"
+          >
+            <span className="flex size-14 items-center justify-center rounded-pill bg-sage-light text-sage-deep">
+              <Camera className="size-[28px]" />
+            </span>
+            <span className="mt-3 text-[17px] font-semibold tracking-[-0.02em] text-ink">사진 올리기</span>
+            <span className="mt-0.5 text-[13px] text-label-2">카메라로 찍거나 앨범에서 골라요</span>
+          </button>
         )}
 
         {/* 위치 */}
