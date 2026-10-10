@@ -37,6 +37,7 @@ export default function MapPage() {
   const [restoredDraft, setRestoredDraft] = useState(loadDraft)
   const [reporting, setReporting] = useState(restoredDraft !== null)
   const [notice, setNotice] = useState<string | null>(null)
+  const [sheetCollapsed, setSheetCollapsed] = useState(false)
   const { bins, add, canReport } = useBins()
   const places = useMemo(() => groupPlaces(bins), [bins])
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -123,7 +124,12 @@ export default function MapPage() {
                 position={[place.lat, place.lng]}
                 icon={placeIcon(place, place.key === selectedPlace?.key)}
                 zIndexOffset={place.key === selectedPlace?.key ? 1000 : 0}
-                eventHandlers={{ click: () => setSelectedId(place.key) }}
+                eventHandlers={{
+                  click: () => {
+                    setSelectedId(place.key)
+                    setSheetCollapsed(false)
+                  },
+                }}
               />
             ))}
 
@@ -138,6 +144,7 @@ export default function MapPage() {
             {me && <Marker position={[me.lat, me.lng]} icon={meIcon} interactive={false} />}
 
             <FitAreaOnOpen />
+            <ResizeWithContainer />
             <FollowFirstFix me={me} />
 
             {DEV_TOOLS && (
@@ -235,6 +242,8 @@ export default function MapPage() {
           alternatives={alternatives}
           outsideArea={outsideArea}
           canPickTestLocation={DEV_TOOLS}
+          collapsed={sheetCollapsed}
+          onCollapsedChange={setSheetCollapsed}
           onSelect={(place) => {
             setSelectedId(place.key)
             mapRef.current?.panTo([place.lat, place.lng])
@@ -263,6 +272,17 @@ export default function MapPage() {
       </div>
     </div>
   )
+}
+
+/* 아래 카드를 접고 펼치면 지도 영역 크기가 바뀌므로 지도에 다시 알려준다 */
+function ResizeWithContainer() {
+  const map = useMap()
+  useEffect(() => {
+    const observer = new ResizeObserver(() => map.invalidateSize())
+    observer.observe(map.getContainer())
+    return () => observer.disconnect()
+  }, [map])
+  return null
 }
 
 /* 레이아웃이 잡힌 뒤 크기를 다시 재고 서비스 지역 전체가 보이게 맞춘다 */
