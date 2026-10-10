@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css'
 import { HANGDONG } from '../config/areas.ts'
 import { useBins } from '../hooks/useBins.ts'
 import { useMyLocation } from '../hooks/useMyLocation.ts'
-import { go } from '../hooks/useHashRoute.ts'
+import { go } from '../hooks/useRoute.ts'
 import { directionLabel, distanceM } from '../lib/geo.ts'
 import { recommend } from '../lib/recommend.ts'
 import { groupPlaces, type Place } from '../lib/places.ts'
@@ -13,6 +13,7 @@ import type { LatLng } from '../types/bin.ts'
 import { meIcon, placeIcon } from '../components/map/markers.ts'
 import RecommendSheet, { type SheetItem } from '../components/map/RecommendSheet.tsx'
 import ReportSheet from '../components/map/ReportSheet.tsx'
+import { loadDraft } from '../lib/draft.ts'
 import BackIcon from '../components/icons/BackIcon.tsx'
 import LocateIcon from '../components/icons/LocateIcon.tsx'
 
@@ -32,7 +33,9 @@ export default function MapPage() {
   const [testPosition, setTestPosition] = useState<LatLng | null>(null)
   const [picked, setPicked] = useState<LatLng | null>(null)
   const [satellite, setSatellite] = useState(false)
-  const [reporting, setReporting] = useState(false)
+  /* 카메라를 다녀오다 페이지가 다시 열린 경우, 쓰던 등록 화면을 다시 연다 */
+  const [restoredDraft, setRestoredDraft] = useState(loadDraft)
+  const [reporting, setReporting] = useState(restoredDraft !== null)
   const [notice, setNotice] = useState<string | null>(null)
   const { bins, add, canReport } = useBins()
   const places = useMemo(() => groupPlaces(bins), [bins])
@@ -241,11 +244,16 @@ export default function MapPage() {
         {reporting && (
           <ReportSheet
             me={me}
+            restored={restoredDraft}
             accuracyM={location.status === 'ok' && !testPosition ? location.accuracyM : null}
-            onClose={() => setReporting(false)}
+            onClose={() => {
+              setReporting(false)
+              setRestoredDraft(null)
+            }}
             onDone={(bin) => {
               add(bin)
               setReporting(false)
+              setRestoredDraft(null)
               setSelectedId(`${bin.latitude!.toFixed(6)},${bin.longitude!.toFixed(6)}`)
               setNotice('등록했어요! 다른 사람 지도에도 보여요')
               setTimeout(() => setNotice(null), 2500)

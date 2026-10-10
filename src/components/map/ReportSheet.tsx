@@ -3,10 +3,12 @@ import type { Bin, LatLng, WasteKind } from '../../types/bin.ts'
 import { HANGDONG } from '../../config/areas.ts'
 import { distanceM } from '../../lib/geo.ts'
 import { submitBin } from '../../lib/report.ts'
+import { clearDraft, saveDraft, type Draft } from '../../lib/draft.ts'
 
 type Props = {
   me: LatLng | null
   accuracyM: number | null
+  restored: Draft | null
   onClose: () => void
   onDone: (bin: Bin) => void
 }
@@ -17,14 +19,25 @@ const KINDS: { value: WasteKind; label: string }[] = [
   { value: 'unknown', label: '잘 모르겠어요' },
 ]
 
-export default function ReportSheet({ me, accuracyM, onClose, onDone }: Props) {
+export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }: Props) {
   const [photo, setPhoto] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
-  const [kind, setKind] = useState<WasteKind>('general')
-  const [description, setDescription] = useState('')
+  const [kind, setKind] = useState<WasteKind>(restored?.kind ?? 'general')
+  const [description, setDescription] = useState(restored?.description ?? '')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const fileRef = useRef<HTMLInputElement>(null)
+  const cameraRef = useRef<HTMLInputElement>(null)
+  const albumRef = useRef<HTMLInputElement>(null)
+
+  /* 등록 화면이 열려 있는 동안 내용을 기억해 둔다 (카메라 다녀오다 페이지가 꺼질 때 대비) */
+  useEffect(() => {
+    saveDraft(kind, description)
+  }, [kind, description])
+
+  const close = () => {
+    clearDraft()
+    onClose()
+  }
 
   useEffect(() => {
     if (!photo) return
@@ -46,6 +59,7 @@ export default function ReportSheet({ me, accuracyM, onClose, onDone }: Props) {
     setError(null)
     try {
       const bin = await submitBin({ position: me, photo, wasteKind: kind, description })
+      clearDraft()
       onDone(bin)
     } catch (e) {
       setError(e instanceof Error ? e.message : '등록하지 못했어요')
@@ -54,7 +68,7 @@ export default function ReportSheet({ me, accuracyM, onClose, onDone }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-end justify-center bg-ink/40" onClick={onClose}>
+    <div className="fixed inset-0 z-[1000] flex items-end justify-center bg-ink/40" onClick={close}>
       <section
         role="dialog"
         aria-label="쓰레기통 등록"
@@ -69,28 +83,59 @@ export default function ReportSheet({ me, accuracyM, onClose, onDone }: Props) {
             : '내 위치를 찾고 있어요'}
         </p>
 
-        {/* 사진 */}
+        {restored && !photo && (
+          <p className="mt-3 rounded-2xl bg-butter-light/60 px-3 py-2.5 text-[13px] leading-snug text-ink">
+            사진을 찍는 동안 화면이 새로 열렸어요. 사진을 다시 골라 주세요. 자꾸 이러면 휴대폰 카메라로
+            먼저 찍고 ‘앨범에서 고르기’를 써 주세요.
+          </p>
+        )}
+
+        {/* 사진: 카메라로 바로 찍기 / 앨범에서 고르기 */}
         <input
-          ref={fileRef}
+          ref={cameraRef}
           type="file"
           accept="image/*"
           capture="environment"
           className="hidden"
           onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
         />
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          className="mt-4 flex h-44 w-full items-center justify-center overflow-hidden rounded-card border-2 border-dashed border-line bg-cream text-[16px] font-bold text-ink-soft"
-        >
-          {preview ? (
-            <img src={preview} alt="찍은 사진" className="h-full w-full object-cover" />
-          ) : (
-            '📷 쓰레기통 사진 찍기'
-          )}
-        </button>
+        <input
+          ref={albumRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
+        />
+        {preview ? (
+          <button
+            type="button"
+            onClick={() => albumRef.current?.click()}
+            className="mt-4 block h-44 w-full overflow-hidden rounded-card"
+          >
+            <img src={preview} alt="고른 사진" className="h-full w-full object-cover" />
+          </button>
+        ) : (
+          <div className="mt-4 flex gap-2">
+            <button
+              type="button"
+              onClick={() => cameraRef.current?.click()}
+              className="flex h-32 flex-1 flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-line bg-cream text-[15px] font-bold text-ink"
+            >
+              <span className="text-[26px] leading-none">📷</span>
+              사진 찍기
+            </button>
+            <button
+              type="button"
+              onClick={() => albumRef.current?.click()}
+              className="flex h-32 flex-1 flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-line bg-cream text-[15px] font-bold text-ink"
+            >
+              <span className="text-[26px] leading-none">🖼️</span>
+              앨범에서 고르기
+            </button>
+          </div>
+        )}
         {preview && (
-          <p className="mt-1 text-center text-[13px] text-ink-soft">사진을 누르면 다시 찍을 수 있어요</p>
+          <p className="mt-1 text-center text-[13px] text-ink-soft">사진을 누르면 다른 사진으로 바꿀 수 있어요</p>
         )}
 
         {/* 종류 */}
@@ -142,7 +187,7 @@ export default function ReportSheet({ me, accuracyM, onClose, onDone }: Props) {
         </button>
         <button
           type="button"
-          onClick={onClose}
+          onClick={close}
           className="mt-2 h-12 w-full text-[15px] font-medium text-ink-soft"
         >
           취소

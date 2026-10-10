@@ -1,6 +1,6 @@
 import { MascotFace, MascotWalkingWithBag } from '../components/mascot/Mascot.tsx'
 import PinIcon from '../components/icons/PinIcon.tsx'
-import { go } from '../hooks/useHashRoute.ts'
+import { go } from '../hooks/useRoute.ts'
 
 export default function Home() {
   return (
