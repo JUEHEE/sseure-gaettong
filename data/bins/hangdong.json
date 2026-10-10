@@ -1,11 +1,11 @@
 [
   {
     "id": "0b17f82f-8af5-43d1-81ef-4263e0e32ff3",
-    "latitude": 37.48424,
-    "longitude": 126.82002,
-    "coord_source": "geocoded",
+    "latitude": 37.484292,
+    "longitude": 126.819464,
+    "coord_source": "manual_pin",
     "address": "서울 구로구 연동로13길 25 (서울수목원 현대홈타운스위트)",
-    "detail_location": "현대홈타운스위트 단지 안 · 벤치 옆",
+    "detail_location": "현대홈타운스위트 단지 안 · 104동 어린이놀이터",
     "district": "구로구",
     "area": "hangdong",
     "place_type": "other",
@@ -19,17 +19,17 @@
     "status": "active",
     "last_verified_at": "2026-10-10T00:00:00+09:00",
     "photo_url": "/photos/bins/hometown-bench.jpg",
-    "note": "운영자 현장 확인으로 배변봉투 가능. 단지 안 정확한 위치는 아직 없어 단지 주소 좌표(OpenStreetMap)로 임시 표시",
+    "note": "운영자 현장 확인으로 배변봉투 가능. 위치는 운영자가 표시한 단지 지도를 위성사진에 맞춰 찍음 (오차 약 10~20m)",
     "created_at": "2026-10-10T17:10:00+09:00",
-    "updated_at": "2026-10-10T17:10:00+09:00"
+    "updated_at": "2026-10-10T18:00:00+09:00"
   },
   {
     "id": "f3b5e85d-e9c9-4ff2-bdd5-0917e6c55527",
-    "latitude": 37.48424,
-    "longitude": 126.82002,
-    "coord_source": "geocoded",
+    "latitude": 37.484928,
+    "longitude": 126.820059,
+    "coord_source": "manual_pin",
     "address": "서울 구로구 연동로13길 25 (서울수목원 현대홈타운스위트)",
-    "detail_location": "현대홈타운스위트 단지 안 · 울타리 앞",
+    "detail_location": "현대홈타운스위트 단지 안 · 정문 경비실 옆",
     "district": "구로구",
     "area": "hangdong",
     "place_type": "other",
@@ -43,17 +43,17 @@
     "status": "active",
     "last_verified_at": "2026-10-10T00:00:00+09:00",
     "photo_url": "/photos/bins/hometown-fence.jpg",
-    "note": "운영자 현장 확인으로 배변봉투 가능. 단지 안 정확한 위치는 아직 없어 단지 주소 좌표(OpenStreetMap)로 임시 표시",
+    "note": "운영자 현장 확인으로 배변봉투 가능. 위치는 운영자가 표시한 단지 지도를 위성사진에 맞춰 찍음 (오차 약 10~20m)",
     "created_at": "2026-10-10T17:10:00+09:00",
-    "updated_at": "2026-10-10T17:10:00+09:00"
+    "updated_at": "2026-10-10T18:00:00+09:00"
   },
   {
     "id": "7dbfafac-6fd0-4388-b4d4-af7ef6f4f968",
-    "latitude": 37.48424,
-    "longitude": 126.82002,
-    "coord_source": "geocoded",
+    "latitude": 37.484119,
+    "longitude": 126.820866,
+    "coord_source": "manual_pin",
     "address": "서울 구로구 연동로13길 25 (서울수목원 현대홈타운스위트)",
-    "detail_location": "현대홈타운스위트 단지 안 · 의류수거함 옆",
+    "detail_location": "현대홈타운스위트 단지 안 · 109동 앞 (의류수거함 옆)",
     "district": "구로구",
     "area": "hangdong",
     "place_type": "other",
@@ -67,8 +67,8 @@
     "status": "active",
     "last_verified_at": "2026-10-10T00:00:00+09:00",
     "photo_url": "/photos/bins/hometown-clothes-box.jpg",
-    "note": "운영자 현장 확인으로 배변봉투 가능. 단지 안 정확한 위치는 아직 없어 단지 주소 좌표(OpenStreetMap)로 임시 표시",
+    "note": "운영자 현장 확인으로 배변봉투 가능. 위치는 운영자가 표시한 단지 지도를 위성사진에 맞춰 찍음 (오차 약 10~20m)",
     "created_at": "2026-10-10T17:10:00+09:00",
-    "updated_at": "2026-10-10T17:10:00+09:00"
+    "updated_at": "2026-10-10T18:00:00+09:00"
   }
 ]
