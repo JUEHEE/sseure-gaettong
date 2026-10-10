@@ -1,5 +1,8 @@
 import Home from './pages/Home.tsx'
+import MapPage from './pages/MapPage.tsx'
+import { useHashRoute } from './hooks/useHashRoute.ts'
 
 export default function App() {
-  return <Home />
+  const route = useHashRoute()
+  return route === 'map' ? <MapPage /> : <Home />
 }

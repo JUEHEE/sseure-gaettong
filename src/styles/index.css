@@ -52,3 +52,25 @@
     word-break: keep-all;
   }
 }
+
+/* 지도: OSM 원색을 크림 톤에 맞게 살짝 누그러뜨린다 (마커·내 위치에는 적용 안 됨) */
+.leaflet-tile-pane {
+  filter: saturate(0.6) sepia(0.12) brightness(1.03);
+}
+.leaflet-container {
+  font-family: var(--font-sans);
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+}
+.leaflet-popup-content {
+  margin: 14px 16px;
+}
+.leaflet-control-attribution {
+  border-top-left-radius: 8px;
+  font-size: 10px;
+}
+.satellite .leaflet-tile-pane {
+  filter: none;
+}

@@ -35,7 +35,7 @@
 |---|---|---|
 | 프론트엔드 | React + Vite + TypeScript | 자료가 많고 초보자도 유지보수하기 쉬움 |
 | 스타일 | Tailwind CSS | CSS 파일 관리 없이 빠르게 UI 구성 |
-| 지도 | 카카오맵 JavaScript SDK | 국내 산책로 표현이 좋고 길찾기 연결이 쉬움 (표시용으로만 사용) |
+| 지도 | OpenStreetMap + Leaflet | 가입·API 키 없이 바로 사용. 길찾기는 카카오맵 링크로 연결 |
 | DB | Supabase (PostgreSQL) | 별도 서버 없이 DB·API 사용 |
 | 배포 | Vercel | GitHub 연동 자동 배포, PR 미리보기 |
 | 형태 | 모바일 웹 (PWA) | 앱스토어 없이 QR로 바로 사용 |
@@ -60,7 +60,7 @@ API 키는 `.env` 파일에 넣으며, 저장소에는 절대 커밋하지 않�
 |---|---|
 | 0 | 프로젝트 기반 문서, 데이터 구조, mock 데이터 ✅ |
 | 1 | React + Vite + TypeScript + Tailwind 프로젝트 생성, Vercel 배포 |
-| 2 | 카카오맵 표시 + 현재 위치 |
+| 2 | 지도(OpenStreetMap) + 현재 위치 + 가까운 쓰레기통 카드 |
 | 3 | mock 데이터 마커 표시 |
 | 4 | 추천 카드 + 상세 + 외부 지도 앱 길찾기 |
 | 5 | Supabase 연결 |

@@ -63,7 +63,7 @@
 - 현장조사 원본 사진(GPS 포함)은 저장소에 올리지 않는다.
 
 ### 기술 스택 (예정)
-React + Vite + TypeScript + Tailwind CSS / 카카오맵 JavaScript SDK / Supabase / Vercel.
+React + Vite + TypeScript + Tailwind CSS / 지도: OpenStreetMap + Leaflet (길찾기만 카카오맵 링크) / Supabase / Vercel.
 **아직 연결하지 않는다.** 각 연결은 해당 Step에서 사용자 요청이 있을 때만 진행한다.
 
 ## 6. 데이터 원칙 (반드시 지킬 것)
@@ -72,10 +72,13 @@ React + Vite + TypeScript + Tailwind CSS / 카카오맵 JavaScript SDK / Supabas
    - 값은 `allowed` / `not_allowed` / `unknown` 세 가지뿐이다.
    - **일반 쓰레기통이라는 이유로 `allowed`로 판단하지 않는다.**
    - **반려견 배변봉투함(`pet_bag_box`)이라는 이름만으로도 `allowed`로 판단하지 않는다.** (봉투 지급함일 수 있음)
-   - `allowed` / `not_allowed`는 **현장에서 안내문 등 근거를 직접 확인했을 때만** 바꾼다.
+   - `allowed` / `not_allowed`는 아래 근거 중 하나가 있을 때만 바꾼다.
+     - 현장 안내문, 관리기관 공식 안내
+     - **운영자의 현장 확인** (2026-10-10 사용자 결정). 이때 `note`에 `운영자 현장 확인`을, `last_verified_at`에 확인 날짜를 남긴다.
 2. `bag_available`도 확인 전에는 `unknown`.
 3. `waste_kind`(일반/재활용)는 **추천 우선순위**에만 쓰인다. 배변물 투기 허용을 뜻하지 않는다.
 4. **공용 공간의 쓰레기통만** 등록한다. 아파트 단지 내부, 상가 내부, 사유지는 제외한다.
+   - 예외: **현대홈타운스위트 단지 안 3곳**은 사용자 결정으로 포함한다 (2026-10-10). 위치 설명에 `단지 안`을 꼭 적는다.
 5. 담배꽁초 전용 수거함은 등록하지 않는다.
 6. 좌표 출처는 `coord_source`로 반드시 기록한다.
    - **카카오 로컬 API 결과(좌표·주소)는 DB에 저장하지 않는다.** (카카오 운영정책상 저장 금지)
