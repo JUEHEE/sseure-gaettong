@@ -4,6 +4,7 @@ import { HANGDONG } from '../../config/areas.ts'
 import { distanceM } from '../../lib/geo.ts'
 import { submitBin } from '../../lib/report.ts'
 import { clearDraft, saveDraft, type Draft } from '../../lib/draft.ts'
+import { isKakaoInApp, openInExternalBrowserUrl } from '../../lib/inApp.ts'
 
 type Props = {
   me: LatLng | null
@@ -83,7 +84,22 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
             : '내 위치를 찾고 있어요'}
         </p>
 
-        {restored && !photo && (
+        {isKakaoInApp && !photo && (
+          <div className="mt-3 rounded-2xl bg-butter-light/60 px-3 py-3 text-[13px] leading-snug text-ink">
+            <p>
+              카카오톡 안에서는 ‘사진 찍기’가 잘 안 될 수 있어요. ‘앨범에서 고르기’를 쓰거나, 다른 브라우저로
+              열어 주세요.
+            </p>
+            <a
+              href={openInExternalBrowserUrl('/map')}
+              className="mt-2 flex h-11 items-center justify-center rounded-pill bg-ink text-[14px] font-bold text-paper"
+            >
+              다른 브라우저로 열기
+            </a>
+          </div>
+        )}
+
+        {!isKakaoInApp && restored && !photo && (
           <p className="mt-3 rounded-2xl bg-butter-light/60 px-3 py-2.5 text-[13px] leading-snug text-ink">
             사진을 찍는 동안 화면이 새로 열렸어요. 사진을 다시 골라 주세요. 자꾸 이러면 휴대폰 카메라로
             먼저 찍고 ‘앨범에서 고르기’를 써 주세요.
