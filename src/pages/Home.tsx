@@ -1,8 +1,11 @@
 import { MascotFace, MascotRunning } from '../components/mascot/Mascot.tsx'
 import { MapPin } from '../components/icons/Symbols.tsx'
 import { go } from '../hooks/useRoute.ts'
+import { useBins } from '../hooks/useBins.ts'
 
 export default function Home() {
+  const { bins } = useBins()
+
   return (
     <div className="flex min-h-dvh justify-center bg-cream">
       <main className="flex w-full max-w-[430px] flex-col px-5 pt-[max(env(safe-area-inset-top),10px)] pb-[max(env(safe-area-inset-bottom),20px)]">
@@ -29,15 +32,20 @@ export default function Home() {
           <MascotRunning className="w-full max-w-[380px] px-2" />
         </div>
 
-        {/* 주요 행동: 엄지가 닿는 아래쪽 */}
-        <button
-          type="button"
-          onClick={() => go('map')}
-          className="mt-5 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-sage text-[17px] font-semibold tracking-[-0.01em] text-paper transition active:scale-[0.98] active:bg-sage-deep"
-        >
-          <MapPin className="size-[21px]" />
-          내 주변 쓰레기통 찾기
-        </button>
+        {/* 주요 행동: iOS 캡슐 버튼 + 작은 설명 (엄지가 닿는 아래쪽) */}
+        <div className="mt-5 flex flex-col items-center gap-2">
+          <button
+            type="button"
+            onClick={() => go('map')}
+            className="flex h-[50px] items-center gap-2 rounded-pill bg-sage pr-6 pl-5 text-[17px] font-semibold tracking-[-0.015em] text-paper shadow-[0_6px_16px_-8px_rgb(82_100_63/0.6)] transition active:scale-[0.97] active:bg-sage-deep"
+          >
+            <MapPin className="size-5" />
+            내 주변 쓰레기통 찾기
+          </button>
+          <p className="text-[13px] tracking-[-0.01em] text-label-2">
+            항동 생활권 · 쓰레기통 {bins.length}곳
+          </p>
+        </div>
       </main>
     </div>
   )
