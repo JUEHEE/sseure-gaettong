@@ -3,7 +3,7 @@ import { Circle, MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } 
 import type { Map as LeafletMap } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { HANGDONG } from '../config/areas.ts'
-import { bins } from '../data/bins.ts'
+import { useBins } from '../hooks/useBins.ts'
 import { useMyLocation } from '../hooks/useMyLocation.ts'
 import { go } from '../hooks/useHashRoute.ts'
 import { directionLabel, distanceM } from '../lib/geo.ts'
@@ -12,6 +12,7 @@ import { groupPlaces, type Place } from '../lib/places.ts'
 import type { LatLng } from '../types/bin.ts'
 import { meIcon, placeIcon } from '../components/map/markers.ts'
 import RecommendSheet, { type SheetItem } from '../components/map/RecommendSheet.tsx'
+import ReportSheet from '../components/map/ReportSheet.tsx'
 import BackIcon from '../components/icons/BackIcon.tsx'
 import LocateIcon from '../components/icons/LocateIcon.tsx'
 
@@ -21,8 +22,6 @@ const DEV_TOOLS = import.meta.env.DEV
 /* 처음 열 때 서비스 지역 원 전체가 보이도록 */
 const dLat = HANGDONG.radiusM / 111320
 const dLng = HANGDONG.radiusM / (111320 * Math.cos((HANGDONG.center.lat * Math.PI) / 180))
-const places = groupPlaces(bins)
-
 const AREA_BOUNDS: [[number, number], [number, number]] = [
   [HANGDONG.center.lat - dLat, HANGDONG.center.lng - dLng],
   [HANGDONG.center.lat + dLat, HANGDONG.center.lng + dLng],
@@ -33,13 +32,17 @@ export default function MapPage() {
   const [testPosition, setTestPosition] = useState<LatLng | null>(null)
   const [picked, setPicked] = useState<LatLng | null>(null)
   const [satellite, setSatellite] = useState(false)
+  const [reporting, setReporting] = useState(false)
+  const [notice, setNotice] = useState<string | null>(null)
+  const { bins, add, canReport } = useBins()
+  const places = useMemo(() => groupPlaces(bins), [bins])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const mapRef = useRef<LeafletMap | null>(null)
 
   const me: LatLng | null =
     testPosition ?? (location.status === 'ok' ? location.position : null)
 
-  const candidates = useMemo(() => (me ? recommend(me, places) : []), [me])
+  const candidates = useMemo(() => (me ? recommend(me, places) : []), [me, places])
 
   const toItem = (place: Place): SheetItem =>
     me
@@ -177,6 +180,26 @@ export default function MapPage() {
             )}
           </div>
 
+          {/* 쓰레기통 등록 */}
+          {canReport && (
+            <button
+              type="button"
+              onClick={() => setReporting(true)}
+              className="absolute bottom-4 left-4 z-10 flex h-12 items-center gap-1.5 rounded-pill bg-paper px-4 text-[15px] font-bold text-ink shadow-soft active:scale-95"
+            >
+              <span className="text-[20px] leading-none text-sage">＋</span>
+              쓰레기통 등록
+            </button>
+          )}
+
+          {notice && (
+            <div className="pointer-events-none absolute inset-x-0 top-20 z-20 flex justify-center">
+              <span role="status" className="rounded-pill bg-ink px-4 py-2.5 text-[14px] font-medium text-paper shadow-soft">
+                {notice}
+              </span>
+            </div>
+          )}
+
           {/* 내 위치로 */}
           <div className="absolute right-4 bottom-4 z-10 flex flex-col items-end gap-2">
             {testPosition && (
@@ -214,6 +237,21 @@ export default function MapPage() {
             mapRef.current?.panTo([place.lat, place.lng])
           }}
         />
+
+        {reporting && (
+          <ReportSheet
+            me={me}
+            accuracyM={location.status === 'ok' && !testPosition ? location.accuracyM : null}
+            onClose={() => setReporting(false)}
+            onDone={(bin) => {
+              add(bin)
+              setReporting(false)
+              setSelectedId(`${bin.latitude!.toFixed(6)},${bin.longitude!.toFixed(6)}`)
+              setNotice('등록했어요! 다른 사람 지도에도 보여요')
+              setTimeout(() => setNotice(null), 2500)
+            }}
+          />
+        )}
       </div>
     </div>
   )

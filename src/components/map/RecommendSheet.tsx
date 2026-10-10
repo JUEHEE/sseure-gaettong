@@ -97,6 +97,11 @@ export default function RecommendSheet(props: Props) {
             <span className="rounded-pill bg-sage-light px-2.5 py-1 text-[13px] font-medium text-sage-deep">
               {WASTE_LABEL[main.waste_kind]}
             </span>
+            {main.source === 'user_report' && (
+              <span className="rounded-pill bg-butter-light px-2.5 py-1 text-[13px] font-medium text-ink">
+                사용자 등록
+              </span>
+            )}
             <span className="rounded-pill bg-cream-deep px-2.5 py-1 text-[13px] font-medium text-ink-soft">
               {main.pet_waste_status === 'allowed'
                 ? main.note?.includes('운영자 현장 확인')

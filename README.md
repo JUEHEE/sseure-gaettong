@@ -47,6 +47,8 @@ npm install
 npm run dev
 ```
 
+쓰레기통 등록 기능을 쓰려면 `.env.example`을 복사해 `.env`를 만들고 Supabase 값을 넣습니다. 서버 설정은 `supabase/setup.sql`.
+
 - 컴퓨터: 브라우저에서 `http://localhost:5173`
 - 휴대폰: 컴퓨터와 같은 Wi-Fi에 연결한 뒤, 터미널에 나오는 `Network: http://192.168.x.x:5173` 주소로 접속
 
