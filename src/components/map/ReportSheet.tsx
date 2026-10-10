@@ -29,6 +29,7 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
   const [error, setError] = useState<string | null>(null)
   const cameraRef = useRef<HTMLInputElement>(null)
   const albumRef = useRef<HTMLInputElement>(null)
+  const dragStartY = useRef<number | null>(null)
 
   /* 등록 화면이 열려 있는 동안 내용을 기억해 둔다 (카메라 다녀오다 페이지가 꺼질 때 대비) */
   useEffect(() => {
@@ -76,7 +77,24 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
         onClick={(e) => e.stopPropagation()}
         className="max-h-[92dvh] w-full max-w-[430px] overflow-y-auto rounded-t-card bg-paper px-5 pt-3 pb-[max(env(safe-area-inset-bottom),20px)]"
       >
-        <div className="mx-auto mb-4 h-1.5 w-10 rounded-pill bg-line" />
+        {/* 손잡이: 아래로 끌거나 누르면 닫힌다 */}
+        <button
+          type="button"
+          aria-label="등록 화면 닫기"
+          onPointerDown={(e) => {
+            dragStartY.current = e.clientY
+            e.currentTarget.setPointerCapture(e.pointerId)
+          }}
+          onPointerUp={(e) => {
+            const start = dragStartY.current
+            dragStartY.current = null
+            if (start !== null && e.clientY - start > -10) close()
+          }}
+          onPointerCancel={() => (dragStartY.current = null)}
+          className="-mx-5 -mt-3 mb-1 flex h-9 w-[calc(100%+2.5rem)] touch-none items-center justify-center"
+        >
+          <span className="h-1.5 w-10 rounded-pill bg-line" />
+        </button>
         <h2 className="font-display text-[24px] leading-tight text-ink">여기 쓰레기통 등록하기</h2>
         <p className="mt-1 text-[14px] text-ink-soft">
           {me

@@ -22,6 +22,7 @@ export type Bin = {
   status: 'active' | 'missing' | 'hidden'
   last_verified_at?: string | null
   photo_url?: string | null
+  owner_token_hash?: string | null
   note?: string | null
 }
 

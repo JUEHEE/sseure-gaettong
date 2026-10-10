@@ -37,6 +37,10 @@ create table if not exists public.bins (
 
 alter table public.bins enable row level security;
 
+-- 등록한 사람만 삭제할 수 있게: 등록한 휴대폰이 가진 비밀 열쇠의 SHA-256 값 (열쇠 자체는 저장하지 않음)
+alter table public.bins add column if not exists owner_token_hash text
+  check (owner_token_hash is null or owner_token_hash ~ '^[0-9a-f]{64}$');
+
 -- 2. 누가 무엇을 할 수 있는가 (RLS)
 -- 읽기: 누구나, 운영 중(active)인 것만
 drop policy if exists "누구나 운영 중인 쓰레기통 보기" on public.bins;
@@ -50,7 +54,7 @@ create policy "누구나 운영 중인 쓰레기통 보기"
 --  - 배변봉투 가능 여부·봉투 비치는 '확인 안 됨'으로만 (운영자만 바꿀 수 있음)
 --  - 항동 생활권 근처 좌표만 (푸른수목원 중심 약 2km 네모)
 --  - 사진은 이 프로젝트의 bin-photos 저장소 주소만
--- 수정·삭제 정책은 만들지 않는다 → 사용자는 수정·삭제 불가 (운영자는 대시보드에서 가능)
+-- 수정 정책은 만들지 않는다 → 사용자는 수정 불가. 삭제는 아래 delete_my_bin 함수로 본인 것만.
 drop policy if exists "누구나 쓰레기통 등록" on public.bins;
 create policy "누구나 쓰레기통 등록"
   on public.bins for insert
@@ -67,6 +71,32 @@ create policy "누구나 쓰레기통 등록"
     and longitude between 126.802 and 126.847
     and photo_url like '%/storage/v1/object/public/bin-photos/reports/%'
   );
+
+-- 삭제: 등록한 사람만 (휴대폰에 저장된 열쇠가 맞을 때만). 다른 사람·운영자 데이터는 삭제 불가.
+-- 표에 직접 지우는 권한은 주지 않고, 열쇠를 확인하는 이 함수로만 지울 수 있다.
+create extension if not exists pgcrypto with schema extensions;
+
+create or replace function public.delete_my_bin(p_id uuid, p_token text)
+returns boolean
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+declare
+  deleted int;
+begin
+  delete from public.bins
+  where id = p_id
+    and source = 'user_report'
+    and owner_token_hash is not null
+    and owner_token_hash = encode(extensions.digest(p_token, 'sha256'), 'hex');
+  get diagnostics deleted = row_count;
+  return deleted > 0;
+end;
+$$;
+
+revoke all on function public.delete_my_bin(uuid, text) from public;
+grant execute on function public.delete_my_bin(uuid, text) to anon, authenticated;
 
 -- 3. 사진 저장소: 누구나 볼 수 있고, 누구나 올릴 수 있음 (덮어쓰기·삭제는 불가)
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

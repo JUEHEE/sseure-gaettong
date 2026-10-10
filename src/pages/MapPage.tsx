@@ -14,6 +14,8 @@ import { meIcon, placeIcon } from '../components/map/markers.ts'
 import RecommendSheet, { type SheetItem } from '../components/map/RecommendSheet.tsx'
 import ReportSheet from '../components/map/ReportSheet.tsx'
 import { loadDraft } from '../lib/draft.ts'
+import { myToken } from '../lib/myBins.ts'
+import { deleteMyBin } from '../lib/report.ts'
 import BackIcon from '../components/icons/BackIcon.tsx'
 import LocateIcon from '../components/icons/LocateIcon.tsx'
 
@@ -38,7 +40,7 @@ export default function MapPage() {
   const [reporting, setReporting] = useState(restoredDraft !== null)
   const [notice, setNotice] = useState<string | null>(null)
   const [sheetCollapsed, setSheetCollapsed] = useState(false)
-  const { bins, add, canReport } = useBins()
+  const { bins, add, remove, canReport } = useBins()
   const places = useMemo(() => groupPlaces(bins), [bins])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const mapRef = useRef<LeafletMap | null>(null)
@@ -244,6 +246,14 @@ export default function MapPage() {
           canPickTestLocation={DEV_TOOLS}
           collapsed={sheetCollapsed}
           onCollapsedChange={setSheetCollapsed}
+          isMine={(id) => myToken(id) !== null}
+          onDelete={async (id) => {
+            await deleteMyBin(id)
+            remove(id)
+            setSelectedId(null)
+            setNotice('삭제했어요')
+            setTimeout(() => setNotice(null), 2500)
+          }}
           onSelect={(place) => {
             setSelectedId(place.key)
             mapRef.current?.panTo([place.lat, place.lng])

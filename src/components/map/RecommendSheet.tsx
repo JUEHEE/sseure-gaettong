@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { WasteKind } from '../../types/bin.ts'
 import type { LocationState } from '../../hooks/useMyLocation.ts'
 import { formatDistance, walkMinutes } from '../../lib/geo.ts'
@@ -19,6 +19,8 @@ type Props = {
   collapsed: boolean
   onCollapsedChange: (collapsed: boolean) => void
   onSelect: (place: Place) => void
+  isMine: (binId: string) => boolean
+  onDelete: (binId: string) => Promise<void>
 }
 
 const WASTE_LABEL: Record<WasteKind, string> = {
@@ -40,6 +42,7 @@ export default function RecommendSheet(props: Props) {
   const { collapsed, onCollapsedChange } = props
   const main = selected ? (bestBin(selected.place)?.bin ?? selected.place.bins[0]) : null
   const many = !!selected && selected.place.bins.length > 1
+  const mineBin = selected?.place.bins.find((b) => props.isMine(b.id)) ?? null
 
   /* 손잡이: 아래로 끌면 접고, 위로 끌면 펼치고, 그냥 누르면 바꾼다 */
   const dragStartY = useRef<number | null>(null)
@@ -174,6 +177,8 @@ export default function RecommendSheet(props: Props) {
                 카카오맵으로 길찾기
               </a>
 
+              {mineBin && <DeleteMine key={mineBin.id} onDelete={() => props.onDelete(mineBin.id)} />}
+
               {alternatives.length > 0 && (
                 <div className="mt-4">
                   <p className="mb-1.5 text-[13px] font-semibold text-ink-soft">다른 후보</p>
@@ -232,6 +237,69 @@ function LocationMessage({
           <p className="mt-1 text-[13px] text-sage-deep">테스트: 지도를 누르면 그곳을 내 위치로 정할 수 있어요.</p>
         )}
       </div>
+    </div>
+  )
+}
+
+/* 내가 등록한 쓰레기통 삭제: 한 번 더 확인하고 지운다 */
+function DeleteMine({ onDelete }: { onDelete: () => Promise<void> }) {
+  const [confirming, setConfirming] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!confirming) return
+    const timer = setTimeout(() => setConfirming(false), 5000)
+    return () => clearTimeout(timer)
+  }, [confirming])
+
+  const run = async () => {
+    setDeleting(true)
+    setError(null)
+    try {
+      await onDelete()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '삭제하지 못했어요')
+      setDeleting(false)
+      setConfirming(false)
+    }
+  }
+
+  return (
+    <div className="mt-3 rounded-2xl bg-cream px-3 py-2">
+      <div className="flex min-h-10 items-center justify-between gap-2">
+        <span className="text-[13px] text-ink-soft">
+          {confirming ? '정말 삭제할까요? 다른 사람 지도에서도 사라져요' : '내가 등록한 쓰레기통이에요'}
+        </span>
+        {confirming ? (
+          <span className="flex shrink-0 gap-1.5">
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              className="h-9 rounded-pill bg-cream-deep px-3 text-[13px] font-bold text-ink-soft"
+            >
+              취소
+            </button>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={run}
+              className="h-9 rounded-pill bg-orange px-3 text-[13px] font-bold text-paper disabled:opacity-60"
+            >
+              {deleting ? '삭제 중…' : '삭제'}
+            </button>
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setConfirming(true)}
+            className="h-9 shrink-0 rounded-pill px-3 text-[13px] font-bold text-orange"
+          >
+            삭제하기
+          </button>
+        )}
+      </div>
+      {error && <p className="pb-1 text-[13px] text-orange">{error}</p>}
     </div>
   )
 }
