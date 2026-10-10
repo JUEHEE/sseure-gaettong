@@ -36,27 +36,6 @@ export function BinSticker({ kind = 'general', className }: { kind?: WasteKind; 
   return <span className={`inline-flex ${className ?? ''}`} dangerouslySetInnerHTML={{ __html: binStickerSvg(kind, 32) }} />
 }
 
-/* 사진 올리기: 카메라 + 뒤에 기울어진 사진 한 장 */
-export function CameraSticker({ className }: { className?: string }) {
-  const line = { stroke: DOG.line, strokeWidth: 2.4, strokeLinecap: 'round', strokeLinejoin: 'round' } as const
-  return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
-      <g transform="rotate(-12 34 22)">
-        <rect x="18" y="7" width="32" height="26" rx="5" fill="#FFFDF8" {...line} />
-        <path d="M21 29l7-7 5 5 4-4 9 9" fill="#A9BB8A" {...line} strokeWidth={2} />
-        <circle cx="40" cy="15" r="3" fill="#F2CF72" stroke="none" />
-      </g>
-      <path d="M22 27l3-5h14l3 5" fill={DOG.fur} {...line} />
-      <rect x="8" y="26" width="48" height="31" rx="9" fill={DOG.fur} {...line} />
-      <circle cx="32" cy="41.5" r="10" fill="#A9BB8A" {...line} />
-      <circle cx="32" cy="41.5" r="4.6" fill="#657A4E" />
-      <circle cx="29.6" cy="39" r="1.8" fill="#FFFDF8" />
-      <rect x="45" y="31" width="6" height="4" rx="2" fill="#F2CF72" {...line} strokeWidth={1.8} />
-      <circle cx="15" cy="33" r="1.6" fill={DOG.blush} opacity="0.5" />
-    </svg>
-  )
-}
-
 /* 발바닥 — 도보 거리, 홈 버튼 */
 export function Paw({ className }: { className?: string }) {
   return (

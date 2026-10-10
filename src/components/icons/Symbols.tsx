@@ -56,3 +56,10 @@ export const Directions = (p: IconProps) => (
   </Symbol>
 )
 
+/* camera — 사진 올리기 */
+export const Camera = (p: IconProps) => (
+  <Symbol {...p} strokeWidth={1.8}>
+    <path d="M3.8 9A2.5 2.5 0 0 1 6.3 6.5h1.6l1.3-1.9a1.5 1.5 0 0 1 1.2-.6h3.2a1.5 1.5 0 0 1 1.2.6l1.3 1.9h1.6A2.5 2.5 0 0 1 20.2 9v8a2.5 2.5 0 0 1-2.5 2.5H6.3A2.5 2.5 0 0 1 3.8 17Z" />
+    <circle cx="12" cy="12.8" r="3.3" />
+  </Symbol>
+)

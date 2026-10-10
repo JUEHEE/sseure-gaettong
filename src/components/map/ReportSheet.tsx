@@ -5,8 +5,7 @@ import { distanceM } from '../../lib/geo.ts'
 import { submitBin } from '../../lib/report.ts'
 import { clearDraft, saveDraft, type Draft } from '../../lib/draft.ts'
 import { isKakaoInApp, openInExternalBrowserUrl } from '../../lib/inApp.ts'
-import { LocationArrow } from '../icons/Symbols.tsx'
-import { CameraSticker } from '../icons/Stickers.tsx'
+import { Camera, LocationArrow } from '../icons/Symbols.tsx'
 
 type Props = {
   me: LatLng | null
@@ -153,10 +152,12 @@ export default function ReportSheet({ me, accuracyM, restored, onClose, onDone }
           <button
             type="button"
             onClick={() => photoRef.current?.click()}
-            className="mt-3 flex h-[168px] w-full flex-col items-center justify-center rounded-[22px] bg-group transition active:scale-[0.98] active:bg-fill"
+            className="mt-3 flex h-[150px] w-full flex-col items-center justify-center rounded-[22px] bg-group transition active:scale-[0.98] active:bg-fill"
           >
-            <CameraSticker className="size-[76px]" />
-            <span className="mt-2 text-[17px] font-semibold tracking-[-0.02em] text-ink">사진 올리기</span>
+            <span className="flex size-14 items-center justify-center rounded-pill bg-sage-light text-sage-deep">
+              <Camera className="size-[28px]" />
+            </span>
+            <span className="mt-3 text-[17px] font-semibold tracking-[-0.02em] text-ink">사진 올리기</span>
             <span className="mt-0.5 text-[13px] text-label-2">카메라로 찍거나 앨범에서 골라요</span>
           </button>
         )}

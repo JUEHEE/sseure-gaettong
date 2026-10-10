@@ -52,7 +52,7 @@ Cute · Round · Warm · Friendly · Simple · Hand-drawn · Soft colors
 | 주요 버튼 | pill(`rounded-pill`), 높이 64px, 화면 아래쪽 엄지 영역 |
 | 카드 | `rounded-card`(28px) |
 | 하단 시트 | 위쪽 모서리만 28px |
-| 아이콘 | 두 종류. **스티커**(`icons/Stickers.tsx`): 마스코트와 같은 화풍(초코 외곽선 + 크림·세이지·버터 면) — 쓰레기통 마커, 사진 올리기, 등록 버튼, 발바닥(도보·홈 버튼). **기능 아이콘**(`icons/Symbols.tsx`): iOS 기본 모양 — 뒤로, 목록 >, 내 위치, 길찾기. 이모지는 쓰지 않음 |
+| 아이콘 | 두 종류. **스티커**(`icons/Stickers.tsx`): 마스코트와 같은 화풍(초코 외곽선 + 크림·세이지·버터 면) — 쓰레기통 마커, 등록 버튼, 발바닥(도보·홈 버튼). **기능 아이콘**(`icons/Symbols.tsx`): iOS 기본 모양 — 뒤로, 목록 >, 내 위치, 길찾기, 사진 올리기(연두 원 안 카메라). 이모지는 쓰지 않음 |
 | 그림자 | `shadow-soft`, `shadow-button`만. 진하게 쓰지 않는다 |
 | 터치 영역 | 최소 48×48px |
 
