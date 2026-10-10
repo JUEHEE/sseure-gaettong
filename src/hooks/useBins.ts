@@ -27,5 +27,9 @@ export function useBins() {
     if (isPlaced(bin)) setRemote((prev) => [...prev, bin])
   }, [])
 
-  return { bins: [...staticBins, ...remote], refresh, add, canReport: supabase !== null }
+  const remove = useCallback((id: string) => {
+    setRemote((prev) => prev.filter((b) => b.id !== id))
+  }, [])
+
+  return { bins: [...staticBins, ...remote], refresh, add, remove, canReport: supabase !== null }
 }
